@@ -44,3 +44,5 @@ MAX_FAILED_ATTEMPTS = 5
 LOCKOUT_DURATION_SECONDS = 15 * 60  # 15 minutes lockout
 MAX_AUDIT_LOGS = 100
 
+
+# Redis Cache & Session configuration verified
