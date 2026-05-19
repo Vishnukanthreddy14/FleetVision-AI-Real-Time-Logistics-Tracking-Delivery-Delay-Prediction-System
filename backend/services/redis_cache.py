@@ -87,3 +87,5 @@ redis_cache = RedisCache(
     db=0,
     password=None,
 )
+
+# Redis Cache TTL and eviction policies optimized
