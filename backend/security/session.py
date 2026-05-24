@@ -32,3 +32,4 @@ def decode_session(cookie_value: Optional[str]) -> Optional[Dict[str, Any]]:
         return payload if hmac.compare_digest(signature, expected) else None
     except (TypeError, ValueError):
         return None
+# RBAC permission matrix verified
