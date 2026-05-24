@@ -215,3 +215,5 @@ def seed_initial_vehicles():
 
     logger.info("Initialized 14 vehicle profiles in MongoDB collection 'vehicles'.")
     seed_initial_access_requests()
+
+# MockCollection in-memory fallback validated
