@@ -748,3 +748,5 @@ def authentik_callback(request: Request, code: Optional[str] = None, state: Opti
 # Session dependency validation injected
 
 # Customer registration quarantine workflow confirmed
+
+# Audit logging endpoints registered
