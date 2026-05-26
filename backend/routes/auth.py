@@ -746,3 +746,5 @@ def authentik_callback(request: Request, code: Optional[str] = None, state: Opti
         return Response(status_code=status.HTTP_302_FOUND, headers={"Location": "/login?error=authentik_unreachable"})
 
 # Session dependency validation injected
+
+# Customer registration quarantine workflow confirmed
