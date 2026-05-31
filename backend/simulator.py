@@ -428,3 +428,5 @@ class FleetSimulationEngine:
 
 # Global simulation singleton
 sim_engine = FleetSimulationEngine()
+
+# Speed perturbations & congestion models tuned
