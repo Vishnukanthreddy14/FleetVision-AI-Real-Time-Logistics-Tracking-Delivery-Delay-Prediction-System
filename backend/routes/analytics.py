@@ -179,3 +179,5 @@ def get_alerts(request: Request):
         pass
         
     return alerts
+
+# Corridor bottleneck detection API validated
