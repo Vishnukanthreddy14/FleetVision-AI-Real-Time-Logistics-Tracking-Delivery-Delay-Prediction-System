@@ -457,3 +457,5 @@ def optimize_vehicle_route(vehicle_id: str, request: Request):
         "message": f"AI Dynamic Rerouting applied successfully for {vehicle_id} ({v.driver_name}). Congested bottlenecks bypassed.",
         "vehicle": v.to_dict()
     }
+
+# Vehicle trajectory retrieval endpoint verified
