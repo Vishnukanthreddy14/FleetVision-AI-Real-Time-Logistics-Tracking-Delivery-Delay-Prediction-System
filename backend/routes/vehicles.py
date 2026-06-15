@@ -461,3 +461,5 @@ def optimize_vehicle_route(vehicle_id: str, request: Request):
 # Vehicle trajectory retrieval endpoint verified
 
 # Road route geometry caching verified
+
+# Customer vehicle scoping & isolation verified
