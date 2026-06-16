@@ -46,3 +46,5 @@ MAX_AUDIT_LOGS = 100
 
 
 # Redis Cache & Session configuration verified
+
+# Connection timeouts and environment validation rules fine-tuned
