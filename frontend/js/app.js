@@ -405,3 +405,5 @@ export function showToast(message, type = "info") {
     toastBox.classList.remove("show");
   }, 4000);
 }
+
+// Event bus and modal controller connected
