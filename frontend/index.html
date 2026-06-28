@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FleetVision AI — Intelligent Freight &amp; Delivery Management</title>
+  <link rel="stylesheet" href="/static/css/style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800;900&family=Inter:wght@400;500;600;700&display=swap"
+    rel="stylesheet">
+</head>
+
+<body>
+
+  <!-- Navigation Header -->
+  <header class="site-nav">
+    <div class="container nav-wrapper">
+      <a href="/" class="brand-logo" aria-label="FleetVision AI Home">
+        <div class="brand-icon-box">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+            stroke-linecap="round" stroke-linejoin="round">
+            <rect x="1" y="3" width="15" height="13"></rect>
+            <polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon>
+            <circle cx="5.5" cy="18.5" r="2.5"></circle>
+            <circle cx="18.5" cy="18.5" r="2.5"></circle>
+          </svg>
+        </div>
+        <span>FleetVision<span style="color: var(--color-primary);">AI</span></span>
+      </a>
+
+      <ul class="nav-links">
+        <li><a href="#about" class="nav-link">About System</a></li>
+        <li><a href="#services" class="nav-link">Provided Services</a></li>
+        <li><a href="#contact" class="nav-link">Contact</a></li>
+      </ul>
+
+      <div class="nav-actions">
+        <!-- Theme Toggle -->
+        <button type="button" class="theme-toggle-btn" id="themeToggleBtn" title="Toggle Dark/Light Mode">
+          <span id="themeIcon">☀️</span>
+        </button>
+
+        <!-- Unauthenticated Buttons -->
+        <div id="unauthActions" style="display: flex; gap: 0.65rem;">
+          <button type="button" class="btn btn-outline btn-sm" id="openLoginBtn">
+            Sign In
+          </button>
+          <button type="button" class="btn btn-primary btn-sm" id="openSignupBtn">
+            Sign Up ➔
+          </button>
+        </div>
+
+        <!-- Authenticated Dropdown / Button -->
+        <div id="authActions" style="display: none; align-items: center; gap: 0.65rem;">
+          <a href="/dashboard.html" class="btn btn-primary btn-sm">
+            Launch Dashboard 🚀
+          </a>
+          <button type="button" class="btn btn-outline btn-sm" id="navLogoutBtn">
+            Sign Out
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Hero / About Section -->
+  <section id="about" class="hero-section">
+    <div class="hero-glow"></div>
+    <div class="container">
+      <div class="about-hero-center">
+        <div class="badge" style="margin-bottom: 1.25rem;">
+          <span class="pulse-dot"></span>
+          Enterprise Logistics &amp; National Freight Coordination
+        </div>
+
+        <h1 class="hero-title" style="font-size: 3.5rem; max-width: 860px; margin: 0 auto 1.25rem;">
+          Intelligent Fleet Visibility &amp; <span class="text-gradient">Real-Time Delivery</span> Operations
+        </h1>
+
+        <p class="hero-subtitle" style="max-width: 720px; margin: 0 auto 2.5rem; font-size: 1.15rem;">
+          FleetVision AI is an end-to-end commercial fleet coordination platform designed for freight operators,
+          dispatchers, and shippers across India's interstate logistics network. Access to live vehicle telematics,
+          interactive corridor GPS maps, driver safety logs, and dock slot reservations is strictly gated for
+          authenticated operations personnel.
+        </p>
+
+        <!-- Action CTAs -->
+        <div style="display: flex; justify-content: center; gap: 1rem; flex-wrap: wrap; margin-bottom: 3.5rem;">
+          <button type="button" class="btn btn-primary" id="heroGetStartedBtn">
+            Sign In to Access Dashboard ➔
+          </button>
+          <button type="button" class="btn btn-secondary" id="heroSignupBtn">
+            Create an Account
+          </button>
+        </div>
+
+        <!-- Key Platform Pillars -->
+        <div class="stats-ribbon" style="margin-top: 1rem;">
+          <div class="stat-item">
+            <h3>50,000+</h3>
+            <p>Kilometers Monitored</p>
+          </div>
+          <div class="stat-item">
+            <h3>98.4%</h3>
+            <p>On-Time Delivery Target</p>
+          </div>
+          <div class="stat-item">
+            <h3>24/7</h3>
+            <p>Active Operations Support</p>
+          </div>
+          <div class="stat-item">
+            <h3>100%</h3>
+            <p>Secure Role-Gated Access</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Provided Services Section -->
+  <section id="services" style="padding: 5rem 0; background: var(--bg-surface-elevated);">
+    <div class="container">
+      <div class="section-header">
+        <div class="badge">Provided Services</div>
+        <h2>Comprehensive Logistics Solutions</h2>
+        <p>Built for modern supply chain reliability, rapid dispatch turnaround, and complete fleet accountability.</p>
+      </div>
+
+      <div class="features-grid">
+        <div class="feature-card">
+          <div class="feature-icon-circle">🚚</div>
+          <h3>Fleet Telematics &amp; Live Tracking</h3>
+          <p>Real-time vehicle movement, speed analysis, engine health diagnostics, and fuel consumption monitoring
+            across active commercial haulers.</p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon-circle">⏱️</div>
+          <h3>Dynamic Arrival Estimations</h3>
+          <p>Sub-minute estimated times of arrival (ETAs) computed continuously using live corridor traffic, weather
+            impact, and waypoint progress.</p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon-circle">🗺️</div>
+          <h3>National Corridor Routing</h3>
+          <p>Intelligent multi-corridor transit management across major Indian arterial freight routes with toll plaza
+            pre-clearance tracking.</p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon-circle">🛡️</div>
+          <h3>Driver Safety &amp; Compliance</h3>
+          <p>Pilot certification profiles, hours of service (HOS) gauges, safety performance scorecards, and driving
+            duty cycle tracking.</p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon-circle">📦</div>
+          <h3>Automated Dock Slot Booking</h3>
+          <p>Advance loading and unloading dock scheduling, instant distance-weight freight rate calculations, and
+            authenticated electronic gate-passes.</p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon-circle">🔒</div>
+          <h3>Enterprise Security &amp; Access Controls</h3>
+          <p>Role-based authentication ensuring sensitive dispatch logs, pilot records, and freight tracking remain
+            exclusively accessible to authorized personnel.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Contact Section -->
+  <section id="contact" style="padding: 5rem 0;">
+    <div class="container" style="max-width: 960px;">
+      <div class="section-header">
+        <div class="badge">Get in Touch</div>
+        <h2>Operations Support &amp; Contact</h2>
+        <p>Connect with our 24/7 central logistics dispatch team or send an inquiry to our enterprise team.</p>
+      </div>
+
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 2rem;">
+        <!-- Contact Information Cards -->
+        <div class="feature-card" style="padding: 2rem;">
+          <div class="feature-icon-circle">📞</div>
+          <h3>24/7 Dispatch Hotline</h3>
+          <p style="margin-bottom: 1rem; color: var(--text-secondary);">Direct access to national highway dispatch
+            controllers and emergency assistance.</p>
+          <div style="font-size: 1.15rem; font-weight: 800; color: var(--color-primary);">+91 1800 266 5000</div>
+          <div style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.25rem;">Toll-free across all Indian
+            circles</div>
+        </div>
+
+        <div class="feature-card" style="padding: 2rem;">
+          <div class="feature-icon-circle">✉️</div>
+          <h3>Email Assistance</h3>
+          <p style="margin-bottom: 1rem; color: var(--text-secondary);">For enterprise onboarding, system integrations,
+            and commercial account support.</p>
+          <div style="font-size: 1.05rem; font-weight: 800; color: var(--color-primary);">support@fleetvision.ai</div>
+          <div style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.25rem;">Guaranteed response under 15
+            minutes</div>
+        </div>
+
+        <div class="feature-card" style="padding: 2rem;">
+          <div class="feature-icon-circle">🏢</div>
+          <h3>Central Operations Hub</h3>
+          <p style="margin-bottom: 1rem; color: var(--text-secondary);">Corporate Logistics &amp; Telematics Command
+            Center.</p>
+          <div style="font-size: 0.95rem; font-weight: 700; color: var(--text-primary);">BKC Freight Terminal, Bandra
+            Kurla Complex, Mumbai, Maharashtra 400051</div>
+          <div style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.25rem;">India Command Hub</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="site-footer" style="margin-top: 0;">
+    <div class="container footer-wrap">
+      <div style="display: flex; align-items: center; gap: 0.75rem;">
+        <div class="brand-icon-box" style="width: 30px; height: 30px;">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <rect x="1" y="3" width="15" height="13"></rect>
+            <polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon>
+          </svg>
+        </div>
+        <span style="font-weight: 800; font-size: 1.1rem;">FleetVision AI</span>
+        <span style="font-size: 0.85rem; color: var(--text-muted);">• Indian Freight &amp; Delivery Management</span>
+      </div>
+
+      <div style="font-size: 0.85rem; color: var(--text-muted);">
+        24/7 Operations Line: <strong style="color: var(--color-primary);">+91 1800 266 5000</strong>
+      </div>
+    </div>
+  </footer>
+
+  <!-- =========================================================================
+       Authentication Modal (Login & Signup with Quick Persona Presets)
+       ========================================================================= -->
+  <div class="modal-overlay" id="authModal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <div>
+          <h3 id="modalTitle" style="font-size: 1.25rem; font-weight: 800;">Sign In to Fleet Operations</h3>
+          <p style="font-size: 0.78rem; color: var(--text-muted);">FleetVision role-based access</p>
+        </div>
+        <button type="button" class="modal-close-btn" id="closeAuthModalBtn">&times;</button>
+      </div>
+
+      <!-- Tab Switcher -->
+      <div class="auth-tabs">
+        <button type="button" class="auth-tab-btn active" id="tabLoginBtn">Sign In</button>
+        <button type="button" class="auth-tab-btn" id="tabSignupBtn">Create Account</button>
+      </div>
+
+      <div class="modal-body">
+        <!-- 1. LOGIN FORM -->
+        <form id="loginForm">
+          <div class="form-group">
+            <label class="form-label" for="loginEmail">Work Email Address</label>
+            <input type="email" id="loginEmail" class="form-input" placeholder="e.g. admin@fleetvision.ai" required
+              autocomplete="username">
+          </div>
+
+          <div class="form-group">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.4rem;">
+              <label class="form-label" for="loginPassword" style="margin-bottom: 0;">Password</label>
+              <a href="javascript:void(0)" id="forgotPwdTrigger"
+                style="font-size: 0.75rem; color: var(--color-primary); font-weight: 600;">Forgot password?</a>
+            </div>
+            <input type="password" id="loginPassword" class="form-input" placeholder="Enter your credentials" required
+              autocomplete="current-password">
+          </div>
+
+          <button type="submit" class="btn btn-primary" id="loginSubmitBtn" style="width: 100%; margin-top: 0.5rem;">
+            Authenticate &amp; Launch Dashboard ➔
+          </button>
+        </form>
+
+        <!-- 2. SIGNUP FORM -->
+        <form id="signupForm" style="display: none;">
+          <div class="form-group">
+            <label class="form-label" for="signupName">Full Name</label>
+            <input type="text" id="signupName" class="form-input" placeholder="e.g. Vikram Malhotra" required>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="signupEmail">Work Email</label>
+            <input type="email" id="signupEmail" class="form-input" placeholder="name@fleetvision.ai" required>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Account Type</label>
+            <div class="form-input" aria-readonly="true">Customer access (requires Super Admin approval)</div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="signupPassword">Password</label>
+            <input type="password" id="signupPassword" class="form-input" placeholder="Min 8 characters" required>
+          </div>
+
+          <button type="submit" class="btn btn-primary" id="signupSubmitBtn" style="width: 100%; margin-top: 0.5rem;">
+            Request Customer Access ➔
+          </button>
+        </form>
+
+        <!-- Demo Access by Role -->
+        <div class="persona-presets">
+          <div class="persona-label">Demo access:</div>
+          <div class="persona-chips-grid">
+            <button type="button" class="persona-chip" data-persona="admin">
+              <span>👑</span>
+              <div>
+                <div>Admin</div>
+                <small style="color: var(--text-muted); font-size: 0.68rem;">Director Vance</small>
+              </div>
+            </button>
+            <button type="button" class="persona-chip" data-persona="super_admin">
+              <span>⚙️</span>
+              <div>
+                <div>Super Admin</div>
+                <small style="color: var(--text-muted); font-size: 0.68rem;">System Owner</small>
+              </div>
+            </button>
+            <button type="button" class="persona-chip" data-persona="customer">
+              <span>📦</span>
+              <div>
+                <div>Customer</div>
+                <small style="color: var(--text-muted); font-size: 0.68rem;">Fleet Viewer</small>
+              </div>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div class="toast-box" id="toastBox">
+    <span id="toastIcon">ℹ️</span>
+    <span id="toastMsg">Notification message</span>
+  </div>
+
+  <script type="module" src="/static/js/app.js"></script>
+</body>
+
+</html>
