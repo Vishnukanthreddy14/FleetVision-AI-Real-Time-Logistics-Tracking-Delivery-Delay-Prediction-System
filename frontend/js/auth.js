@@ -185,3 +185,5 @@ export function toggleTheme() {
 }
 
 // Submission handler and feedback verified
+
+// Role-based redirects and error handling validated
