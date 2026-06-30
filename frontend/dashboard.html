@@ -1,0 +1,697 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FleetVision AI — Operations Dashboard & Live Telematics</title>
+
+  <!-- Resilient Pre-Render Authentication Guard -->
+  <script>
+    (function () {
+      const stored = localStorage.getItem("fleetvision_auth_user");
+      const hasCookie = document.cookie.split(";").some(c => c.trim().startsWith("fleetvision_auth_user="));
+      if (!stored && !hasCookie) {
+        window.location.replace("/index.html?auth=required");
+      }
+    })();
+  </script>
+
+  <!-- Leaflet CSS for OpenStreetMap Interactive Corridor Routing -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+
+  <!-- Custom Stylesheets -->
+  <link rel="stylesheet" href="/static/css/style.css">
+  <link rel="stylesheet" href="/static/css/dashboard.css">
+</head>
+
+<body>
+
+  <div class="dash-layout">
+    <!-- Dashboard Top Bar -->
+    <header class="dash-topbar">
+      <div class="dash-topbar-left">
+        <a href="/" class="dash-brand" title="Return to Public Landing Page">
+          <div class="brand-icon-box">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <rect x="1" y="3" width="15" height="13"></rect>
+              <polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon>
+            </svg>
+          </div>
+          <span>FleetVision<span style="color: var(--color-primary);">AI</span></span>
+        </a>
+
+        <div class="sim-indicator">
+          <span class="pulse-dot"></span>
+          <span id="kafkaStreamStatus">Kafka Stream: Active (6 Fleets)</span>
+        </div>
+      </div>
+
+      <div class="dash-topbar-right">
+        <!-- Theme Toggle -->
+        <button type="button" class="theme-toggle-btn" id="dashThemeToggleBtn" title="Toggle Light/Dark Theme">
+          <span id="dashThemeIcon">☀️</span>
+        </button>
+
+        <!-- User Profile Chip -->
+        <div class="user-chip">
+          <div class="user-avatar-circle" id="userAvatar">JV</div>
+          <div class="user-chip-meta">
+            <div class="user-chip-name" id="userName">Director Vance</div>
+            <div class="user-chip-role" id="userRole">Fleet Administrator</div>
+          </div>
+        </div>
+
+        <!-- Logout Button -->
+        <button type="button" class="btn btn-outline btn-sm" id="dashLogoutBtn">
+          Sign Out
+        </button>
+      </div>
+    </header>
+
+    <!-- Navigation Tabs Bar (The Required Menu Items) -->
+    <nav class="dash-nav-bar">
+      <ul class="dash-nav-tabs">
+        <li>
+          <button type="button" class="dash-nav-tab active" data-view="view-fleets">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="1" y="3" width="15" height="13"></rect>
+              <polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon>
+            </svg>
+            Live Fleets &amp; ETAs
+          </button>
+        </li>
+        <li>
+          <button type="button" class="dash-nav-tab" data-view="view-drivers">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+              <circle cx="9" cy="7" r="4"></circle>
+            </svg>
+            Drivers
+          </button>
+        </li>
+        <li>
+          <button type="button" class="dash-nav-tab" data-view="view-routes">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"></polygon>
+              <line x1="8" y1="2" x2="8" y2="18"></line>
+            </svg>
+            Routes
+          </button>
+        </li>
+        <li>
+          <button type="button" class="dash-nav-tab" data-view="view-booking">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+              <line x1="16" y1="2" x2="16" y2="6"></line>
+              <line x1="8" y1="2" x2="8" y2="6"></line>
+              <line x1="3" y1="10" x2="21" y2="10"></line>
+            </svg>
+            Booking Slot
+          </button>
+        </li>
+        <li>
+          <button type="button" class="dash-nav-tab" data-view="view-help">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"></circle>
+              <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+              <line x1="12" y1="17" x2="12.01" y2="17"></line>
+            </svg>
+            Help
+          </button>
+        </li>
+        <li>
+          <button type="button" class="dash-nav-tab" data-view="view-access-requests" id="navTabAccessRequests">
+            <span aria-hidden="true">🛡️</span>
+            Access Requests
+            <span class="nav-count-badge" id="badgePendingAccessRequests" style="display:none;">0</span>
+          </button>
+        </li>
+        <li>
+          <button type="button" class="dash-nav-tab" data-view="view-customer-fleets" id="navTabCustomerFleets">
+            <span aria-hidden="true">🚛</span>
+            Customer Fleets
+          </button>
+        </li>
+      </ul>
+    </nav>
+
+    <!-- Main Workspace Container -->
+    <main class="dash-main">
+
+      <!-- =====================================================================
+           TAB 1: LIVE FLEETS & ARRIVAL ESTIMATION (DEFAULT VIEW)
+           ===================================================================== -->
+      <section id="view-fleets" class="dash-view active">
+        <!-- KPI Metrics Strip -->
+        <div class="kpi-row">
+          <div class="kpi-box">
+            <div class="kpi-box-top">
+              <span class="kpi-box-title">Active Fleets</span>
+              <span>🚛</span>
+            </div>
+            <div class="kpi-box-val" id="kpiActiveCount">6</div>
+            <div class="kpi-box-sub">Commercial units streaming live</div>
+          </div>
+
+          <div class="kpi-box">
+            <div class="kpi-box-top">
+              <span class="kpi-box-title">On-Time Reliability</span>
+              <span>⚡</span>
+            </div>
+            <div class="kpi-box-val" style="color: var(--color-secondary);" id="kpiOnTimeRate">98.4%</div>
+            <div class="kpi-box-sub">Dual ML ensemble precision</div>
+          </div>
+
+          <div class="kpi-box">
+            <div class="kpi-box-top">
+              <span class="kpi-box-title">Avg Corridor Speed</span>
+              <span>🧭</span>
+            </div>
+            <div class="kpi-box-val" style="color: var(--color-primary);" id="kpiAvgSpeed">63.8 km/h</div>
+            <div class="kpi-box-sub">National highway cruising pace</div>
+          </div>
+
+          <div class="kpi-box">
+            <div class="kpi-box-top">
+              <span class="kpi-box-title">Delay Risk Alerts</span>
+              <span>🛡️</span>
+            </div>
+            <div class="kpi-box-val" style="color: var(--color-secondary);" id="kpiRiskAlerts">0</div>
+            <div class="kpi-box-sub">All corridors within nominal window</div>
+          </div>
+        </div>
+
+        <!-- Map & Vehicle Inspector Split Workspace -->
+        <div class="workspace-grid">
+          <!-- Left: OpenStreetMap Interactive Corridor Radar -->
+          <div class="map-container-card">
+            <div class="map-card-head">
+              <div style="display: flex; align-items: center; gap: 0.5rem;">
+                <span class="pulse-dot"></span>
+                <strong style="font-size: 0.95rem;">National Highway Telematics Radar (OpenStreetMap)</strong>
+              </div>
+              <div style="display: flex; gap: 0.5rem;">
+                <button type="button" class="btn btn-secondary btn-sm" id="btnFitMap">
+                  Center Fleet
+                </button>
+                <button type="button" class="btn btn-outline btn-sm" id="btnToggleSimSpeed">
+                  Speed: 1x
+                </button>
+              </div>
+            </div>
+            <div id="leafletMap"></div>
+          </div>
+
+          <!-- Right: Live Vehicle Telemetry & Dual ML Inspector -->
+          <div class="inspector-card">
+            <div>
+              <div class="inspector-head">
+                <div>
+                  <span class="badge" id="inspBadge">TRK-101 • MH-12-RN-8492</span>
+                  <h3 style="font-size: 1.3rem; font-weight: 800; margin: 0.35rem 0 0.15rem;" id="inspModel">Tata Prima
+                    5530.S</h3>
+                  <p style="font-size: 0.8rem; color: var(--text-muted);" id="inspCargo">Cargo: Automotive Precision
+                    Parts</p>
+                </div>
+                <span
+                  style="font-size: 0.78rem; font-weight: 700; color: var(--color-secondary); background: rgba(16, 185, 129, 0.12); padding: 0.25rem 0.65rem; border-radius: 9999px;"
+                  id="inspStatus">
+                  In Transit
+                </span>
+              </div>
+
+              <!-- Corridor Info -->
+              <div
+                style="background: var(--bg-surface-elevated); padding: 0.75rem 1rem; border-radius: 0.75rem; border: 1px solid var(--border-subtle); margin-bottom: 1.25rem; font-size: 0.85rem;">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 0.25rem;">
+                  <span style="color: var(--text-muted);">Corridor:</span>
+                  <strong style="color: var(--text-primary);" id="inspRoute">Western Corridor (NH-48)</strong>
+                </div>
+                <div style="display: flex; justify-content: space-between; margin-bottom: 0.25rem;">
+                  <span style="color: var(--text-muted);">Assigned Pilot:</span>
+                  <strong style="color: var(--text-primary);" id="inspDriver">Rajesh Sharma (DRV-801)</strong>
+                </div>
+                <div style="display: flex; justify-content: space-between;">
+                  <span style="color: var(--text-muted);">Coordinates:</span>
+                  <span style="font-family: var(--font-mono); color: var(--color-primary); font-size: 0.78rem;"
+                    id="inspCoords">18.5204° N, 73.8567° E</span>
+                </div>
+              </div>
+
+              <!-- Live Telemetry Specs Grid -->
+              <div class="telemetry-grid">
+                <div class="telemetry-tile">
+                  <div class="telemetry-tile-lbl">Current Speed</div>
+                  <div class="telemetry-tile-val" id="inspSpeed">64.2 km/h</div>
+                </div>
+                <div class="telemetry-tile">
+                  <div class="telemetry-tile-lbl">Fuel Remaining</div>
+                  <div class="telemetry-tile-val" style="color: var(--color-secondary);" id="inspFuel">82.5%</div>
+                </div>
+                <div class="telemetry-tile">
+                  <div class="telemetry-tile-lbl">Distance Left</div>
+                  <div class="telemetry-tile-val" id="inspDistLeft">312.4 km</div>
+                </div>
+                <div class="telemetry-tile">
+                  <div class="telemetry-tile-lbl">Engine Temp</div>
+                  <div class="telemetry-tile-val" id="inspTemp">88°C</div>
+                </div>
+                <div class="telemetry-tile">
+                  <div class="telemetry-tile-lbl">Traffic Density</div>
+                  <div class="telemetry-tile-val" id="inspTraffic">Nominal</div>
+                </div>
+                <div class="telemetry-tile">
+                  <div class="telemetry-tile-lbl">Weather</div>
+                  <div class="telemetry-tile-val" id="inspWeather">Clear (28°C)</div>
+                </div>
+              </div>
+
+              <!-- Dual Machine Learning ETA Forecast Box -->
+              <div class="ml-prediction-card">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                  <strong style="font-size: 0.88rem; color: var(--text-primary);">Dual ML Arrival Estimation</strong>
+                  <span class="badge" style="font-size: 0.7rem;">AI Ground Truth</span>
+                </div>
+
+                <div class="ml-models-row">
+                  <div class="ml-model-pill">
+                    <h5>Random Forest Dwell Model</h5>
+                    <strong id="inspRfEta">3h 48m</strong>
+                    <div style="font-size: 0.68rem; color: var(--text-muted); margin-top: 0.2rem;">±4.2m variance</div>
+                  </div>
+                  <div class="ml-model-pill">
+                    <h5>Keras LSTM Velocity Model</h5>
+                    <strong style="color: var(--color-secondary);" id="inspLstmEta">3h 41m</strong>
+                    <div style="font-size: 0.68rem; color: var(--text-muted); margin-top: 0.2rem;">98.4% sequence fit
+                    </div>
+                  </div>
+                </div>
+
+                <div
+                  style="margin-top: 0.85rem; display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--border-subtle); padding-top: 0.75rem;">
+                  <span style="font-size: 0.82rem; color: var(--text-secondary);">Ensemble Predicted ETA:</span>
+                  <strong style="font-size: 1.2rem; color: var(--color-primary);" id="inspBlendedEta">3h 45m</strong>
+                </div>
+              </div>
+            </div>
+
+            <!-- Actions -->
+            <div style="display: flex; flex-direction: column; gap: 0.65rem;">
+              <button type="button" class="btn btn-primary" id="btnRerouteOpt" style="width: 100%;">
+                ⚡ Execute AI Dynamic Reroute
+              </button>
+              <div style="display: flex; gap: 0.5rem;">
+                <button type="button" class="btn btn-secondary btn-sm" id="btnInjectIncident" style="flex: 1;">
+                  🚨 Test Incident
+                </button>
+                <button type="button" class="btn btn-outline btn-sm" id="btnClearIncident" style="flex: 1;">
+                  🔄 Reset Normal
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Telematics Table for All 6 Fleets -->
+        <div class="data-table-card">
+          <div class="table-head-row">
+            <div>
+              <h3 style="font-size: 1.15rem; font-weight: 800;">6 Fleet Units Telematics Stream (WGS-84 / OBD-II)</h3>
+              <p style="font-size: 0.78rem; color: var(--text-muted);">Click any row to inspect trajectory and ML
+                prediction curves</p>
+            </div>
+          </div>
+
+          <div style="overflow-x: auto;">
+            <table class="fleet-table">
+              <thead>
+                <tr>
+                  <th>Vehicle ID</th>
+                  <th>Model / Axle</th>
+                  <th>Assigned Pilot</th>
+                  <th>Highway Corridor</th>
+                  <th>Speed</th>
+                  <th>Fuel</th>
+                  <th>Ensemble ETA</th>
+                  <th>Risk Level</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody id="fleetsTableBody">
+                <!-- Dynamically populated from data.js -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- =====================================================================
+           TAB 2: DRIVERS DIRECTORY
+           ===================================================================== -->
+      <section id="view-drivers" class="dash-view">
+        <div style="margin-bottom: 1.5rem;">
+          <h2 style="font-size: 1.5rem; font-weight: 800;">Certified Fleet Pilots &amp; Safety Compliance</h2>
+          <p style="color: var(--text-secondary); font-size: 0.9rem;">HCV/CDL credentials, real-time safety scores,
+            on-time rates, and Hours of Service (HOS) logs.</p>
+        </div>
+
+        <div class="drivers-grid" id="driversGrid">
+          <!-- Dynamically populated -->
+        </div>
+      </section>
+
+      <!-- =====================================================================
+           TAB 3: ROUTES AVAILABLE
+           ===================================================================== -->
+      <section id="view-routes" class="dash-view">
+        <div style="margin-bottom: 1.5rem;">
+          <h2 style="font-size: 1.5rem; font-weight: 800;">National Highway Freight Corridors</h2>
+          <p style="color: var(--text-secondary); font-size: 0.9rem;">Key Indian transit arteries with FASTag toll
+            plazas, elevation grades, and live surface conditions.</p>
+        </div>
+
+        <div class="routes-grid" id="routesGrid">
+          <!-- Dynamically populated -->
+        </div>
+      </section>
+
+      <!-- =====================================================================
+           TAB 4: BOOKING SLOT
+           ===================================================================== -->
+      <section id="view-booking" class="dash-view">
+        <div style="margin-bottom: 1.5rem;">
+          <h2 style="font-size: 1.5rem; font-weight: 800;">Freight Dock Slot Reservation</h2>
+          <p style="color: var(--text-secondary); font-size: 0.9rem;">Schedule loading dock bays with automated NHAI
+            FASTag pre-clearance and instant AI rate estimation.</p>
+        </div>
+
+        <div class="booking-grid">
+          <!-- Booking Form Card -->
+          <div class="booking-form-card">
+            <h3 style="font-size: 1.2rem; font-weight: 800; margin-bottom: 1.25rem;">Reserve New Loading Dock Slot</h3>
+            <form id="slotBookingForm">
+              <div class="form-group">
+                <label class="form-label" for="bookConsignor">Consignor / Enterprise Name</label>
+                <input type="text" id="bookConsignor" class="form-input" placeholder="e.g. Tata Steel / Reliance Retail"
+                  required>
+              </div>
+
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                <div class="form-group">
+                  <label class="form-label" for="bookOrigin">Origin Hub</label>
+                  <select id="bookOrigin" class="form-input">
+                    <option value="Mumbai JNPT Port">Mumbai JNPT Port</option>
+                    <option value="Delhi ICD Tuglakabad">Delhi ICD Tuglakabad</option>
+                    <option value="Nagpur Multi-Modal Hub">Nagpur Multi-Modal Hub</option>
+                    <option value="Chennai Ennore Port">Chennai Ennore Port</option>
+                    <option value="Ahmedabad Sanand Hub">Ahmedabad Sanand Hub</option>
+                    <option value="Hyderabad Cherlapally Hub">Hyderabad Cherlapally Hub</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="bookDest">Destination Warehouse</label>
+                  <select id="bookDest" class="form-input">
+                    <option value="Bengaluru Logistics Hub">Bengaluru Logistics Hub</option>
+                    <option value="Vadodara Industrial Corridor">Vadodara Industrial Corridor</option>
+                    <option value="Hyderabad Outer Ring Road">Hyderabad Outer Ring Road</option>
+                    <option value="Visakhapatnam Harbor Gateway">Visakhapatnam Harbor Gateway</option>
+                    <option value="Kota Industrial Zone">Kota Industrial Zone</option>
+                    <option value="Pune Chakan Automotive Cluster">Pune Chakan Automotive Cluster</option>
+                  </select>
+                </div>
+              </div>
+
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                <div class="form-group">
+                  <label class="form-label" for="bookTonnage">Cargo Tonnage (Tons)</label>
+                  <input type="number" id="bookTonnage" class="form-input" value="22.5" step="0.5" min="1" max="60"
+                    required>
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="bookVehicleType">Vehicle Class</label>
+                  <select id="bookVehicleType" class="form-input">
+                    <option value="40T Multi-Axle">Class 8 Multi-Axle (40T)</option>
+                    <option value="32T Container">High-Volume Container (32T)</option>
+                    <option value="24T Reefer">Cold-Chain Reefer (24T)</option>
+                    <option value="55T Over-Dimensional">Heavy ODC Transporter (55T)</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="bookTime">Preferred Dispatch Window</label>
+                <select id="bookTime" class="form-input">
+                  <option value="Today • 20:00 - 22:00 IST">Today • 20:00 - 22:00 IST</option>
+                  <option value="Tomorrow • 06:00 - 08:00 IST">Tomorrow • 06:00 - 08:00 IST</option>
+                  <option value="Tomorrow • 14:00 - 16:00 IST">Tomorrow • 14:00 - 16:00 IST</option>
+                </select>
+              </div>
+
+              <!-- Live AI Quote Box -->
+              <div
+                style="background: var(--bg-surface-elevated); padding: 1rem; border-radius: 0.75rem; border: 1px solid var(--border-subtle); margin-bottom: 1.25rem;">
+                <div
+                  style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.35rem;">
+                  <span style="font-size: 0.82rem; color: var(--text-muted);">AI Estimated Distance:</span>
+                  <strong id="quoteDist" style="color: var(--text-primary);">984 km</strong>
+                </div>
+                <div
+                  style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.35rem;">
+                  <span style="font-size: 0.82rem; color: var(--text-muted);">Ensemble Estimated Travel Time:</span>
+                  <strong id="quoteEta" style="color: var(--color-secondary);">17.0 hrs</strong>
+                </div>
+                <div
+                  style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--border-subtle); padding-top: 0.5rem; margin-top: 0.5rem;">
+                  <span style="font-size: 0.88rem; font-weight: 700; color: var(--text-primary);">Estimated Freight
+                    Rate:</span>
+                  <strong id="quoteRate" style="font-size: 1.25rem; color: var(--color-primary);">₹34,500</strong>
+                </div>
+              </div>
+
+              <button type="submit" class="btn btn-primary" style="width: 100%;">
+                Confirm Dock Slot &amp; Issue FASTag Pass ➔
+              </button>
+            </form>
+          </div>
+
+          <!-- Confirmed Bookings Queue -->
+          <div class="booking-receipt-card">
+            <h3 style="font-size: 1.2rem; font-weight: 800; margin-bottom: 1.25rem;">Scheduled Dock Queue</h3>
+            <div id="bookingQueueContainer" style="display: flex; flex-direction: column; gap: 0.75rem;">
+              <!-- Dynamically populated from data.js -->
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- =====================================================================
+           TAB 5: HELP & DISPATCH HOTLINE
+           ===================================================================== -->
+      <section id="view-help" class="dash-view">
+        <div style="margin-bottom: 1.5rem;">
+          <h2 style="font-size: 1.5rem; font-weight: 800;">Logistics Dispatch Help Desk &amp; Documentation</h2>
+          <p style="color: var(--text-secondary); font-size: 0.9rem;">24/7 National Emergency Hotline, knowledgebase,
+            and engineering escalation ticketing.</p>
+        </div>
+
+        <div class="help-grid">
+          <!-- Left: Knowledgebase FAQ -->
+          <div>
+            <h3 style="font-size: 1.15rem; font-weight: 800; margin-bottom: 1rem;">Operations Knowledgebase</h3>
+            <div id="dashFaqContainer" style="display: flex; flex-direction: column; gap: 0.85rem;">
+              <!-- Dynamically populated -->
+            </div>
+          </div>
+
+          <!-- Right: Hotline & Ticket Form -->
+          <div>
+            <!-- Emergency Dispatch Hotline Banner -->
+            <div class="hotline-banner">
+              <span class="badge"
+                style="background: rgba(255,255,255,0.2); color: #FFFFFF; border-color: rgba(255,255,255,0.4);">
+                24/7 EMERGENCY DISPATCH HOTLINE
+              </span>
+              <div class="hotline-num">+91 1800 266 5000</div>
+              <p style="font-size: 0.85rem; opacity: 0.9;">Emergency break-down assistance, route clearance, accident
+                escalation, and FASTag gate clearance.</p>
+            </div>
+
+            <!-- Open Support Ticket -->
+            <div class="data-table-card">
+              <h4 style="font-size: 1.1rem; font-weight: 800; margin-bottom: 1rem;">Dispatch Engineering Ticket</h4>
+              <form id="helpTicketForm">
+                <div class="form-group">
+                  <label class="form-label" for="ticketCategory">Issue Category</label>
+                  <select id="ticketCategory" class="form-input">
+                    <option value="Kafka Telematics Disconnect">Kafka Telematics Ingestion Disconnect</option>
+                    <option value="ETA Model Recalibration">ML ETA Prediction Recalibration</option>
+                    <option value="Driver HOS Discrepancy">Driver HOS Log Discrepancy</option>
+                    <option value="Dock Slot Conflict">Dock Slot Scheduling Conflict</option>
+                  </select>
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label" for="ticketMsg">Details &amp; Sensor Logs</label>
+                  <textarea id="ticketMsg" class="form-input" rows="3"
+                    placeholder="Provide vehicle ID or route number..." required></textarea>
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-sm" style="width: 100%;">
+                  Dispatch Support Ticket ➔
+                </button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="view-access-requests" class="dash-view">
+        <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom: 1.5rem; flex-wrap:wrap; gap:1rem;">
+          <div>
+            <h2 style="font-size: 1.5rem; font-weight: 800; display:flex; align-items:center; gap:0.5rem;">
+              <span>🛡️</span> Super Admin Authorization Center
+            </h2>
+            <p style="color: var(--text-secondary); font-size: 0.9rem;">
+              Review user account signups and authorize Admin-submitted customer commercial fleet access delegations.
+            </p>
+          </div>
+          <div class="subnav-tabs" role="tablist">
+            <button type="button" class="subnav-btn active" id="subtabFleetRequests" data-subtab="panel-fleet-requests">
+              Fleet Access Delegations <span class="subtab-badge" id="badgeFleetReqCount">0</span>
+            </button>
+            <button type="button" class="subnav-btn" id="subtabUserSignups" data-subtab="panel-user-signups">
+              User Signups <span class="subtab-badge" id="badgeUserSignupCount">0</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Subpanel 1: Fleet Access Requests from Admins -->
+        <div id="panel-fleet-requests" class="subtab-panel">
+          <div class="far-toolbar">
+            <div class="far-filter-group">
+              <span style="font-size:0.75rem; font-weight:700; color:var(--text-secondary); text-transform:uppercase; letter-spacing:0.05em;">Filter Status:</span>
+              <button type="button" class="far-filter-btn active" data-far-filter="all">All</button>
+              <button type="button" class="far-filter-btn" data-far-filter="pending_superadmin_approval">Pending Review</button>
+              <button type="button" class="far-filter-btn" data-far-filter="approved">Authorized</button>
+              <button type="button" class="far-filter-btn" data-far-filter="rejected">Rejected</button>
+            </div>
+            <button type="button" class="btn btn-outline btn-sm" id="btnRefreshFleetRequests">
+              🔄 Refresh List
+            </button>
+          </div>
+
+          <div id="fleetAccessRequestsContainer" aria-live="polite">
+            <p style="color:var(--text-secondary); padding:2rem 0; text-align:center;">Loading fleet access requests...</p>
+          </div>
+        </div>
+
+        <!-- Subpanel 2: User Signups -->
+        <div id="panel-user-signups" class="subtab-panel" style="display:none;">
+          <div id="pendingUsersContainer" class="data-table-card" aria-live="polite">
+            <p>Loading access requests...</p>
+          </div>
+        </div>
+      </section>
+
+      <section id="view-customer-fleets" class="dash-view">
+        <div style="margin-bottom: 1.5rem;">
+          <h2 style="font-size: 1.5rem; font-weight: 800; display:flex; align-items:center; gap:0.5rem;">
+            <span>🚛</span> Customer Fleet Access &amp; Delegation
+          </h2>
+          <p style="color: var(--text-secondary); font-size: 0.9rem;">
+            Admin creates fleet requirements and forwards recommendations to Super Admin for corridor clearance.
+          </p>
+        </div>
+        <div class="booking-grid">
+          <!-- Left Column: Admin submission form -->
+          <div class="booking-form-card" id="customerFleetFormCard">
+            <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:1rem;">
+              <h3 style="font-size:1.1rem; font-weight:800; color:var(--text-primary);">
+                📝 Submit Fleet Access Request to Super Admin
+              </h3>
+              <span class="far-priority-tag" id="formRoleBadge">Admin Portal</span>
+            </div>
+            <form id="customerFleetForm">
+              <div class="form-group">
+                <label class="form-label" for="fleetCustomerSelect">Select Customer Account</label>
+                <select id="fleetCustomerSelect" class="form-input" required>
+                  <option value="">Select an approved customer</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="customerFleetName">Corridor / Fleet Group Name</label>
+                <input id="customerFleetName" class="form-input" required maxlength="80"
+                  placeholder="e.g. Western Corridor Articulated Fleet (NH-48)">
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="customerFleetPriority">Authorization Priority</label>
+                <select id="customerFleetPriority" class="form-input">
+                  <option value="Standard">Standard Dispatch Priority</option>
+                  <option value="High" selected>High Priority (Client Contract SLA)</option>
+                  <option value="Critical">Critical / Expedited Freight</option>
+                </select>
+              </div>
+              <fieldset class="form-group" style="border:0; padding:0; margin:0 0 1rem;">
+                <legend class="form-label">Assign Commercial Vehicle Units</legend>
+                <div id="customerFleetVehicles" style="display:grid; gap:0.5rem; max-height:180px; overflow-y:auto; padding:0.5rem; background:rgba(0,0,0,0.15); border-radius:0.5rem; border:1px solid var(--border-subtle);"></div>
+              </fieldset>
+              <fieldset class="form-group" style="border:0; padding:0; margin:0 0 1rem;">
+                <legend class="form-label">Customer Permissions &amp; Views</legend>
+                <label><input type="checkbox" name="customerPermission" value="fleet:read" checked> Live Fleet Tracking &amp; Telematics</label><br>
+                <label><input type="checkbox" name="customerPermission" value="eta:read" checked> ML Delay &amp; ETA Predictions</label><br>
+                <label><input type="checkbox" name="customerPermission" value="drivers:read" checked> Driver Profiles &amp; Safety Scores</label><br>
+                <label><input type="checkbox" name="customerPermission" value="routes:read" checked> Corridor Route Intel</label><br>
+                <label><input type="checkbox" name="customerPermission" value="help:read" checked> Emergency &amp; Support Resources</label>
+              </fieldset>
+              <div class="form-group">
+                <label class="form-label" for="customerFleetNotes">Admin Recommendation &amp; Justification for Super Admin</label>
+                <textarea id="customerFleetNotes" class="form-input" rows="3" placeholder="Provide business justification, freight corridor requirements, or SLA contract details for Super Admin review..."></textarea>
+              </div>
+              <button type="submit" class="btn btn-primary" id="btnSubmitFleetRequest" style="width:100%; justify-content:center;">
+                🚀 Forward Request to Super Admin
+              </button>
+            </form>
+          </div>
+
+          <!-- Right Column: Status of sent requests & active fleets -->
+          <div style="display:flex; flex-direction:column; gap:1.5rem;">
+            <!-- Requests Sent to Super Admin -->
+            <div class="booking-receipt-card" id="adminRequestsSentCard">
+              <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:1rem;">
+                <h3 style="font-size:1.1rem; font-weight:800;">Requests Sent to Super Admin</h3>
+                <span class="subtab-badge" id="adminSentRequestsCount">0</span>
+              </div>
+              <div id="adminFleetRequestsList" aria-live="polite" style="max-height:260px; overflow-y:auto;">
+                <p style="color:var(--text-secondary); font-size:0.88rem;">No requests submitted yet.</p>
+              </div>
+            </div>
+
+            <!-- Active Authorized Fleets -->
+            <div class="booking-receipt-card">
+              <h3 style="font-size:1.1rem; font-weight:800; margin-bottom:1rem;">Active Authorized Customer Fleets</h3>
+              <div id="customerFleetAssignments" aria-live="polite" style="max-height:260px; overflow-y:auto;"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- Toast Container -->
+  <div class="toast-box" id="dashToastBox">
+    <span id="dashToastIcon">ℹ️</span>
+    <span id="dashToastMsg">Notification message</span>
+  </div>
+
+  <!-- Leaflet JS for OpenStreetMap -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+    integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+
+  <!-- Dashboard Controller Logic -->
+  <script type="module" src="/static/js/dashboard.js"></script>
+</body>
+
+</html>
