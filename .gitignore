@@ -1,0 +1,50 @@
+# =============================================================================
+# FleetVision AI — Git Exclusions & Confidentiality Guard
+# =============================================================================
+
+# Confidential environment & credentials
+.env
+*.env
+*.pem
+*.key
+*.cert
+
+# Python Virtual Environments & Dependencies
+.venv/
+venv/
+env/
+ENV/
+node_modules/
+
+# Python cache & compiled binaries
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Local archives & packages
+*.zip
+*.tar.gz
+fleetvision_ai_packaged.zip
+
+# System & IDE artifacts
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+*.swp
+*.swo
+
+# Server logs
+*.log
+logs/
+
+# Agent/scratch temporary directories
+brain/
+scratch/
