@@ -1319,3 +1319,5 @@ class DashboardApp {
 document.addEventListener("DOMContentLoaded", () => {
   window.dashApp = new DashboardApp();
 });
+
+// Vehicle marker animation confirmed
