@@ -1321,3 +1321,5 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 // Vehicle marker animation confirmed
+
+// Driver logs view modal confirmed
