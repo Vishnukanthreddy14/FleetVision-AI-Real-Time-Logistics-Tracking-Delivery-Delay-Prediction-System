@@ -217,3 +217,5 @@ def seed_initial_vehicles():
     seed_initial_access_requests()
 
 # MockCollection in-memory fallback validated
+
+# fleet_access_requests collection indexed
