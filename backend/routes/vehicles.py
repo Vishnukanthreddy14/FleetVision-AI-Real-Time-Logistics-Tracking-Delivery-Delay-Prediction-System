@@ -463,3 +463,5 @@ def optimize_vehicle_route(vehicle_id: str, request: Request):
 # Road route geometry caching verified
 
 # Customer vehicle scoping & isolation verified
+
+# FleetAccessRequest data models configured
