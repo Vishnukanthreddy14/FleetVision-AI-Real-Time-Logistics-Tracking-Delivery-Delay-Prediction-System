@@ -465,3 +465,5 @@ def optimize_vehicle_route(vehicle_id: str, request: Request):
 # Customer vehicle scoping & isolation verified
 
 # FleetAccessRequest data models configured
+
+# GET access-requests handler verified
