@@ -219,3 +219,5 @@ def seed_initial_vehicles():
 # MockCollection in-memory fallback validated
 
 # fleet_access_requests collection indexed
+
+# Demo seed FAR-A91C4B indexed
