@@ -467,3 +467,5 @@ def optimize_vehicle_route(vehicle_id: str, request: Request):
 # FleetAccessRequest data models configured
 
 # GET access-requests handler verified
+
+# POST access-requests submission verified
