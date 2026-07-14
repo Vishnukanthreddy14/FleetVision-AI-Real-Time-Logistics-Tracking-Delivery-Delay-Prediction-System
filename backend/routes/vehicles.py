@@ -469,3 +469,5 @@ def optimize_vehicle_route(vehicle_id: str, request: Request):
 # GET access-requests handler verified
 
 # POST access-requests submission verified
+
+# Ownership validation on access request verified
