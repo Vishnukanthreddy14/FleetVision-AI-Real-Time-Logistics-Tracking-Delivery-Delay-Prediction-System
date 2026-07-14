@@ -1,0 +1,185 @@
+# =============================================================================
+# FleetVision AI — Unified Multi-Service Docker Compose Orchestration
+# =============================================================================
+# Quickstart Commands:
+#   • Core Stack (App + MongoDB):         docker compose up -d --build
+#   • Database Only (for local coding):   docker compose up -d mongodb
+#   • Full Stack (App + Mongo + Auth):    docker compose --profile auth up -d
+#   • Stop Services:                      docker compose down
+# =============================================================================
+
+services:
+  # ---------------------------------------------------------------------------
+  # 1. MongoDB 7.0 Document Database
+  # ---------------------------------------------------------------------------
+  mongodb:
+    image: mongo:7.0
+    container_name: fleetvision-mongodb
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_DATABASE: fleetvision_ai
+    volumes:
+      - mongo_data:/data/db
+    healthcheck:
+      test: ["CMD-SHELL", "echo 'db.runCommand(\"ping\").ok' | mongosh localhost:27017/test --quiet"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 15s
+    networks:
+      - fleetvision-net
+
+  # ---------------------------------------------------------------------------
+  # 2. FleetVision AI Application Server (FastAPI + WebSockets + ML Engine)
+  # ---------------------------------------------------------------------------
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: fleetvision-app
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    environment:
+      - PORT=8000
+      - HOST=0.0.0.0
+      - MONGO_URI=mongodb://mongodb:27017
+      - DATABASE_NAME=fleetvision_ai
+      - SESSION_SECRET=fleetvision-super-secure-token-signing-secret-2026
+      - AUTHENTIK_HOST=http://localhost:9000
+      - PYTHONUNBUFFERED=1
+    volumes:
+      # Mount frontend directory for live hot-reload edits without image rebuilding
+      - ./frontend:/app/frontend
+      - ./data:/app/data
+    depends_on:
+      mongodb:
+        condition: service_healthy
+    networks:
+      - fleetvision-net
+
+  # ---------------------------------------------------------------------------
+  # 3. Optional Mongo Express Web GUI (Profile: "tools")
+  # Run with: docker compose --profile tools up -d
+  # ---------------------------------------------------------------------------
+  mongo-express:
+    image: mongo-express:latest
+    container_name: fleetvision-mongo-express
+    restart: unless-stopped
+    profiles:
+      - tools
+    ports:
+      - "8081:8081"
+    environment:
+      ME_CONFIG_MONGODB_SERVER: mongodb
+      ME_CONFIG_MONGODB_PORT: 27017
+      ME_CONFIG_MONGODB_ENABLE_ADMIN: "true"
+      ME_CONFIG_BASICAUTH: "false"
+    depends_on:
+      mongodb:
+        condition: service_healthy
+    networks:
+      - fleetvision-net
+
+  # ---------------------------------------------------------------------------
+  # 4. Optional Authentik IdP Stack (Profile: "auth")
+  # Run with: docker compose --profile auth up -d
+  # ---------------------------------------------------------------------------
+  authentik-postgresql:
+    image: postgres:16-alpine
+    container_name: fleetvision-auth-postgres
+    restart: unless-stopped
+    profiles:
+      - auth
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -d $${POSTGRES_DB} -U $${POSTGRES_USER}"]
+      interval: 20s
+      timeout: 5s
+      retries: 5
+    volumes:
+      - authentik_db:/var/lib/postgresql/data
+    environment:
+      POSTGRES_PASSWORD: ${PG_PASS:-fleetvision_authentik_db_secret}
+      POSTGRES_USER: ${PG_USER:-authentik}
+      POSTGRES_DB: ${PG_DB:-authentik}
+    networks:
+      - fleetvision-net
+
+  authentik-redis:
+    image: redis:alpine
+    container_name: fleetvision-auth-redis
+    restart: unless-stopped
+    profiles:
+      - auth
+    healthcheck:
+      test: ["CMD-SHELL", "redis-cli ping | grep PONG"]
+      interval: 20s
+      timeout: 3s
+      retries: 5
+    volumes:
+      - authentik_redis:/data
+    networks:
+      - fleetvision-net
+
+  authentik-server:
+    image: ghcr.io/goauthentik/server:2024.8.3
+    container_name: fleetvision-authentik-server
+    restart: unless-stopped
+    command: server
+    profiles:
+      - auth
+    environment:
+      AUTHENTIK_REDIS__HOST: authentik-redis
+      AUTHENTIK_POSTGRESQL__HOST: authentik-postgresql
+      AUTHENTIK_POSTGRESQL__USER: ${PG_USER:-authentik}
+      AUTHENTIK_POSTGRESQL__NAME: ${PG_DB:-authentik}
+      AUTHENTIK_POSTGRESQL__PASSWORD: ${PG_PASS:-fleetvision_authentik_db_secret}
+      AUTHENTIK_SECRET_KEY: ${AUTHENTIK_SECRET_KEY:-fleetvision_super_secret_authentik_key_2026_x89}
+    ports:
+      - "9000:9000"
+      - "9443:9443"
+    depends_on:
+      authentik-postgresql:
+        condition: service_healthy
+      authentik-redis:
+        condition: service_healthy
+    networks:
+      - fleetvision-net
+
+  authentik-worker:
+    image: ghcr.io/goauthentik/server:2024.8.3
+    container_name: fleetvision-authentik-worker
+    restart: unless-stopped
+    command: worker
+    profiles:
+      - auth
+    environment:
+      AUTHENTIK_REDIS__HOST: authentik-redis
+      AUTHENTIK_POSTGRESQL__HOST: authentik-postgresql
+      AUTHENTIK_POSTGRESQL__USER: ${PG_USER:-authentik}
+      AUTHENTIK_POSTGRESQL__NAME: ${PG_DB:-authentik}
+      AUTHENTIK_POSTGRESQL__PASSWORD: ${PG_PASS:-fleetvision_authentik_db_secret}
+      AUTHENTIK_SECRET_KEY: ${AUTHENTIK_SECRET_KEY:-fleetvision_super_secret_authentik_key_2026_x89}
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    depends_on:
+      authentik-postgresql:
+        condition: service_healthy
+      authentik-redis:
+        condition: service_healthy
+    networks:
+      - fleetvision-net
+
+volumes:
+  mongo_data:
+    driver: local
+  authentik_db:
+    driver: local
+  authentik_redis:
+    driver: local
+
+networks:
+  fleetvision-net:
+    driver: bridge
