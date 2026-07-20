@@ -477,3 +477,5 @@ def optimize_vehicle_route(vehicle_id: str, request: Request):
 # Vehicle array synchronization verified
 
 # Super Admin rejection rationale validated
+
+# Cache invalidation trigger connected
