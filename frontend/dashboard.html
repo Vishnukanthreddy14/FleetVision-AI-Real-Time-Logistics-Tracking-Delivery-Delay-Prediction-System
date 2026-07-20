@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FleetVisionAI Operations Dashboard</title>
+  <script>
+    // Strict Pre-Render Authentication Guard: Deny unauthorized direct access immediately
+    (function() {
+      const stored = localStorage.getItem("fleetvision_auth_user");
+      const hasCookie = document.cookie.split(";").some(c => c.trim().startsWith("fleetvision_auth_user="));
+      if (!stored && !hasCookie) {
+        window.location.replace("/login?denied=true");
+      }
+    })();
+  </script>
+  <link rel="stylesheet" href="/static/css/variables.css?v=20260910_osm">
+  <link rel="stylesheet" href="/static/css/dashboard.css?v=20260910_osm">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+</head>
+<body>
+
+  <div class="dash-container">
+    <!-- Top Navigation Header -->
+    <header class="dash-header">
+      <div class="dash-header-left">
+        <a href="/" class="brand" style="text-decoration: none; color: inherit; display: flex; align-items: center; gap: 0.65rem;">
+          <div class="brand-icon" style="width: 32px; height: 32px;">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <circle cx="12" cy="12" r="10"></circle>
+              <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+              <path d="M2 12h20"></path>
+            </svg>
+          </div>
+          <span style="font-size: 1.25rem; font-weight: 800;">FleetVisionAI</span>
+        </a>
+
+        <div class="live-badge" style="padding: 0.25rem 0.65rem; font-size: 0.75rem;">
+          <span class="pulse-dot"></span>
+          <span id="streamStatusPill">Connecting Stream...</span>
+        </div>
+
+        <!-- 5-Minute Simulation Controls (Hidden as per user specifications) -->
+        <div class="sim-control-bar" id="simControlsContainer" style="display: none !important;" aria-hidden="true">
+          <button class="sim-btn primary" id="simPlayBtn" title="Start Simulation">▶️</button>
+          <button class="sim-btn" id="simResetBtn" title="Reset Simulation">🔄</button>
+          <select class="speed-select" id="simSpeedSelect" title="Simulation Speed">
+            <option value="1.0">1x</option>
+          </select>
+          <div class="sim-progress-wrap">
+            <div class="sim-progress-bar">
+              <div class="sim-progress-fill" id="simProgressBarFill"></div>
+            </div>
+            <span class="sim-time-text" id="simTimeText">00:00 / 05:00</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Header Actions -->
+      <div class="dash-header-right">
+        <button class="theme-toggle-btn" onclick="toggleTheme()" title="Toggle Light/Dark Theme">☀️</button>
+
+        <button class="table-action-btn" id="openIncidentModalBtn" title="Inject Real-Time Traffic or Weather Incident" style="display: flex; align-items: center; gap: 0.35rem; border-color: rgba(239, 68, 68, 0.4); color: #FCA5A5;">
+          <span>🚨</span>
+          <span>Inject Incident</span>
+        </button>
+
+        <button class="table-action-btn" id="openAuditBtn" onclick="openAuditModal()" title="View Tamper-Evident Security Audit Logs" style="display: flex; align-items: center; gap: 0.35rem;">
+          <span>🛡️</span>
+          <span>Audit Trail</span>
+        </button>
+
+        <div class="user-profile-badge">
+          <img src="" id="headerUserAvatar" class="user-avatar" alt="Avatar">
+          <div class="user-info">
+            <span class="user-name" id="headerUserName">Operator</span>
+            <span class="user-role-label" id="headerUserRole">ADMIN</span>
+          </div>
+        </div>
+
+        <button class="table-action-btn" onclick="logout()" title="Switch Role / Sign Out">
+          Switch Role
+        </button>
+      </div>
+    </header>
+
+    <!-- Restricted Role Banner (Displays for Driver/Operator) -->
+    <div id="driverRoleBanner" style="display: none; background: rgba(59, 130, 246, 0.12); border-bottom: 1px solid rgba(59, 130, 246, 0.25); padding: 0.65rem 1.5rem; font-size: 0.85rem; color: #93C5FD; align-items: center; justify-content: space-between;">
+      <div style="display: flex; align-items: center; gap: 0.5rem;">
+        <span style="font-size: 1.1rem;">🚚</span>
+        <strong>Assigned Shipment Mode:</strong>
+        <span>Telemetry view strictly restricted to your assigned vehicle (<code style="color: #60A5FA; font-weight: bold; background: rgba(59, 130, 246, 0.2); padding: 0.1rem 0.4rem; border-radius: 4px;">TRK-101</code>). Enterprise controls locked.</span>
+      </div>
+      <span style="font-size: 0.72rem; font-weight: 700; background: rgba(59, 130, 246, 0.25); padding: 0.25rem 0.65rem; border-radius: 9999px; border: 1px solid rgba(59, 130, 246, 0.4); letter-spacing: 0.05em;">DRIVER ACCESS</span>
+    </div>
+
+    <!-- KPI Metric Cards Grid -->
+    <section class="kpi-grid">
+      <div class="kpi-card">
+        <div class="kpi-top">
+          <span class="kpi-title">Active Fleet</span>
+          <span class="kpi-icon">🚛</span>
+        </div>
+        <div class="kpi-value" id="kpiActiveFleet">14</div>
+        <div class="kpi-subtext">Commercial vehicles streaming</div>
+      </div>
+
+      <div class="kpi-card">
+        <div class="kpi-top">
+          <span class="kpi-title">On-Time Reliability</span>
+          <span class="kpi-icon">⚡</span>
+        </div>
+        <div class="kpi-value" style="color: var(--accent-emerald);" id="kpiOnTimeRate">98.2%</div>
+        <div class="kpi-subtext">ML-predicted on-schedule rate</div>
+      </div>
+
+      <div class="kpi-card">
+        <div class="kpi-top">
+          <span class="kpi-title">Avg Fuel Burn Rate</span>
+          <span class="kpi-icon">⛽</span>
+        </div>
+        <div class="kpi-value" style="color: var(--accent-amber);" id="kpiAvgFuel">28.4 L</div>
+        <div class="kpi-subtext">Liters per 100km fleet average</div>
+      </div>
+
+      <div class="kpi-card">
+        <div class="kpi-top">
+          <span class="kpi-title">Fleet Average ETA</span>
+          <span class="kpi-icon">⏱️</span>
+        </div>
+        <div class="kpi-value" style="color: var(--accent-cyan);" id="kpiAvgEta">185 m</div>
+        <div class="kpi-subtext">Dual RF + LSTM blended ETA</div>
+      </div>
+
+      <div class="kpi-card">
+        <div class="kpi-top">
+          <span class="kpi-title">Delay Risk Alerts</span>
+          <span class="kpi-icon">⚠️</span>
+        </div>
+        <div class="kpi-value" style="color: var(--accent-rose);" id="kpiCriticalRisks">0</div>
+        <div class="kpi-subtext">Vehicles facing severe congestion</div>
+      </div>
+    </section>
+
+    <!-- Main Workspace (Map + Inspector) -->
+    <main class="dash-workspace">
+      <!-- Left Column: Map -->
+      <div class="map-card">
+        <div class="map-header">
+          <div class="map-title">
+            <span class="pulse-dot"></span>
+            <span>Living Ground Fleet Radar • Glowing Route Intelligence</span>
+          </div>
+          <div class="map-tools">
+            <button class="table-action-btn" onclick="mapManager.fitFleetView()">Fit Fleet View</button>
+          </div>
+        </div>
+
+        <div id="map"></div>
+
+        <!-- Floating Alert Ticker -->
+        <div style="background: var(--bg-glass); border-top: 1px solid var(--border-color); padding: 0.6rem 1.25rem;">
+          <div id="alertsTickerList" style="min-height: 20px;">
+            <span style="font-size: 0.8rem; color: var(--accent-emerald);">🟢 All 14 regional transport corridors operating normally. Telemetry streaming to MongoDB.</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Column: Vehicle Inspector & Dual ML -->
+      <aside class="side-panel">
+        <div class="inspector-card">
+          <div class="inspector-header">
+            <div>
+              <h3 class="inspector-title" id="inspVehicleId">TRK-101 • CA-789XKL</h3>
+              <p class="inspector-subtitle" id="inspDriverInfo">Alex Rivera (DRV-801) | Heavy Freight (Class 8)</p>
+            </div>
+            <span class="status-badge low" id="inspStatusBadge">In Transit</span>
+          </div>
+
+          <!-- Live Telemetry Specs -->
+          <div class="telemetry-specs-grid">
+            <div class="spec-tile">
+              <div class="spec-tile-label">Current Speed</div>
+              <div class="spec-tile-val" id="inspSpeed">78.4 km/h</div>
+            </div>
+            <div class="spec-tile">
+              <div class="spec-tile-label">Fuel Burn Rate</div>
+              <div class="spec-tile-val" id="inspFuelRate">31.2 L/100km</div>
+            </div>
+            <div class="spec-tile">
+              <div class="spec-tile-label">Fuel Remaining</div>
+              <div class="spec-tile-val" id="inspFuelLvl">84.0%</div>
+            </div>
+            <div class="spec-tile">
+              <div class="spec-tile-label">Traffic Congestion</div>
+              <div class="spec-tile-val" id="inspTraffic">Low</div>
+            </div>
+            <div class="spec-tile">
+              <div class="spec-tile-label">Weather Conditions</div>
+              <div class="spec-tile-val" id="inspWeather">Clear</div>
+            </div>
+            <div class="spec-tile">
+              <div class="spec-tile-label">Distance Remaining</div>
+              <div class="spec-tile-val" id="inspDistance">340.5 km</div>
+            </div>
+          </div>
+
+          <!-- Dual ML Prediction Box -->
+          <div class="ml-pred-box">
+            <div class="ml-pred-title">
+              <span>Dual Machine Learning ETA Forecast</span>
+              <span style="font-size: 0.7rem; color: var(--text-muted);">AI Ground Truth</span>
+            </div>
+
+            <div class="ml-models-row">
+              <div class="ml-model-card">
+                <div class="ml-model-name">Random Forest Model</div>
+                <div class="ml-model-eta" id="inspRfEta">176 min</div>
+              </div>
+              <div class="ml-model-card">
+                <div class="ml-model-name">LSTM Neural Network</div>
+                <div class="ml-model-eta" id="inspLstmEta" style="color: var(--accent-purple);">182 min</div>
+              </div>
+            </div>
+
+            <div class="ml-blended-eta">
+              <span class="ml-blended-label">Ensemble Blended ETA:</span>
+              <span class="ml-blended-val" id="inspBlendedEta">179.6 min</span>
+            </div>
+          </div>
+
+          <!-- Route Optimization Box -->
+          <div class="opt-action-box">
+            <div class="opt-action-title">
+              <span>💡</span>
+              <span id="inspOptTitle">Optimal Path Maintained</span>
+            </div>
+            <p class="opt-action-text" id="inspOptText">
+              Route operating within optimal fuel window. No congestion bottleneck detected ahead.
+            </p>
+            <button class="btn-primary" id="inspOptimizeBtn" style="width: 100%; font-size: 0.85rem; padding: 0.5rem; justify-content: center;">
+              Apply AI Dynamic Reroute
+            </button>
+          </div>
+        </div>
+      </aside>
+    </main>
+
+    <!-- Analytics Charts Section -->
+    <section class="charts-grid">
+      <!-- Chart 1: ML Model Comparison -->
+      <div class="chart-card">
+        <div class="chart-header">
+          <h4 class="chart-title">ETA Forecast: Random Forest vs LSTM Sequential Model</h4>
+        </div>
+        <div class="chart-container">
+          <canvas id="etaComparisonChart"></canvas>
+        </div>
+      </div>
+
+      <!-- Chart 2: Fuel Consumption Telemetry -->
+      <div class="chart-card">
+        <div class="chart-header">
+          <h4 class="chart-title">Fleet Fuel Telemetry: Burn Rate (L/100km) & Remaining %</h4>
+        </div>
+        <div class="chart-container">
+          <canvas id="fuelChart"></canvas>
+        </div>
+      </div>
+
+      <!-- Chart 3: Delay Risk Breakdown -->
+      <div class="chart-card">
+        <div class="chart-header">
+          <h4 class="chart-title">Fleet Risk Categorization</h4>
+        </div>
+        <div class="chart-container">
+          <canvas id="riskChart"></canvas>
+        </div>
+      </div>
+
+      <!-- Chart 4: Speed Distribution -->
+      <div class="chart-card">
+        <div class="chart-header">
+          <h4 class="chart-title">Live Speed Distribution Across 14 Vehicles (km/h)</h4>
+        </div>
+        <div class="chart-container">
+          <canvas id="speedChart"></canvas>
+        </div>
+      </div>
+    </section>
+
+    <!-- Telemetry Table Section -->
+    <section class="table-section">
+      <div class="table-card">
+        <div class="table-header">
+          <h4 style="font-size: 1.1rem; font-weight: 800;">Real-Time Fleet Telemetry (MongoDB Stream)</h4>
+
+          <div style="display: flex; gap: 1rem; align-items: center;">
+            <input type="text" class="table-search" id="vehicleSearchInput" placeholder="Search vehicle ID, driver, or route...">
+            <div class="table-filter-group">
+              <button class="table-filter-btn active" data-filter="all">All (14)</button>
+              <button class="table-filter-btn" data-filter="transit">In Transit</button>
+              <button class="table-filter-btn" data-filter="delayed">Delayed / High Risk</button>
+            </div>
+          </div>
+        </div>
+
+        <div style="overflow-x: auto;">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Vehicle ID</th>
+                <th>Driver</th>
+                <th>Route Corridor</th>
+                <th>Speed</th>
+                <th>Fuel Rate</th>
+                <th>Traffic</th>
+                <th>ML ETA</th>
+                <th>Delay Risk</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="vehiclesTableBody">
+              <!-- Dynamically populated -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- Incident Injection Modal -->
+  <div class="modal-overlay" id="incidentModal">
+    <div class="modal-content">
+      <button class="modal-close" id="closeIncidentModalBtn">&times;</button>
+      <h3 style="font-size: 1.35rem; font-weight: 800; margin-bottom: 0.5rem;">🚨 Inject Live Logistics Incident</h3>
+      <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 1.25rem;">
+        Trigger an unexpected disruption on a vehicle to observe real-time ML delay risk escalation and ETA recalculation.
+      </p>
+
+      <form id="incidentForm">
+        <div class="form-group">
+          <label class="form-label" for="incidentVehicleSelect">Target Vehicle</label>
+          <select class="form-input" id="incidentVehicleSelect">
+            <!-- Dynamically populated -->
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="incidentTypeSelect">Incident Severity & Nature</label>
+          <select class="form-input" id="incidentTypeSelect">
+            <option value="Severe Traffic Jam">Severe Arterial Traffic Bottleneck</option>
+            <option value="Winter Blizzard & Ice">Winter Blizzard / Extreme Weather Delay</option>
+            <option value="Highway Lane Closure">Multi-Lane Highway Construction Delay</option>
+            <option value="Engine Thermal Throttling">Engine Fault / Speed Throttled to 20 km/h</option>
+          </select>
+        </div>
+
+        <button type="submit" class="btn-primary" style="width: 100%; justify-content: center; background: linear-gradient(135deg, #EF4444, #DC2626); box-shadow: 0 0 20px rgba(239, 68, 68, 0.4);">
+          Trigger Incident Simulation
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Security & Tamper-Evident Audit Trail Modal -->
+  <div class="modal-overlay" id="auditModal" style="display: none;">
+    <div class="modal-content" style="max-width: 860px; max-height: 85vh; display: flex; flex-direction: column;">
+      <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.75rem;">
+        <div style="display: flex; align-items: center; gap: 0.6rem;">
+          <span style="font-size: 1.4rem;">🛡️</span>
+          <div>
+            <h3 style="font-size: 1.25rem; font-weight: 800; margin: 0;">Security & Tamper-Evident Audit Trail</h3>
+            <p style="color: var(--text-secondary); font-size: 0.8rem; margin: 0.2rem 0 0 0;">
+              Immutable event log stream recording authentication, session terminations, rate-limit lockouts, and simulation commands.
+            </p>
+          </div>
+        </div>
+        <button class="modal-close" id="closeAuditModalBtn" onclick="closeAuditModal()" style="position: static;">&times;</button>
+      </div>
+
+      <div style="display: flex; gap: 0.75rem; margin-bottom: 0.75rem; align-items: center;">
+        <button class="table-action-btn" onclick="fetchAuditLogs()" title="Refresh Logs" style="font-size: 0.8rem; padding: 0.35rem 0.75rem;">🔄 Refresh</button>
+        <span id="auditLogCount" style="font-size: 0.78rem; color: var(--text-secondary);">Loading logs...</span>
+      </div>
+
+      <div style="overflow-y: auto; flex: 1; border: 1px solid var(--border-color); border-radius: 8px;">
+        <table class="fleet-table" style="width: 100%; font-size: 0.78rem;">
+          <thead>
+            <tr>
+              <th style="padding: 0.5rem;">Time</th>
+              <th style="padding: 0.5rem;">Severity</th>
+              <th style="padding: 0.5rem;">Event</th>
+              <th style="padding: 0.5rem;">User</th>
+              <th style="padding: 0.5rem;">IP</th>
+              <th style="padding: 0.5rem;">Details</th>
+            </tr>
+          </thead>
+          <tbody id="auditTableBody">
+            <!-- Dynamically populated by dashboard.js -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="/static/js/auth.js?v=20260910_osm"></script>
+  <script src="/static/js/map_manager.js?v=20260910_osm"></script>
+  <script src="/static/js/charts_manager.js?v=20260910_osm"></script>
+  <script src="/static/js/dashboard.js?v=20260910_osm"></script>
+</body>
+</html>
+

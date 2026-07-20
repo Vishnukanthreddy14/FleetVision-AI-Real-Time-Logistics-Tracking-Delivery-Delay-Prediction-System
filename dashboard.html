@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FleetVision AI — Fleet Operations Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="dashboard.css">
+</head>
+<body>
+  <div class="dashboard-layout">
+    <!-- Top Navigation Bar -->
+    <header class="top-nav">
+      <div class="nav-left">
+        <a href="dashboard.html" class="nav-logo">
+          <svg class="logo-mark" viewBox="0 0 56 44" fill="none">
+            <path d="M4 32C14 32 20 25 28 17C35 9 44 4 52 4C38 8 28 17 22 25C17 31 11 36 4 38L4 32Z" fill="#111827"/>
+            <path d="M12 40C20 40 26 35 34 27C40 21 47 16 54 14C43 17 35 24 29 32C24 37 19 40 12 40Z" fill="#DC2626"/>
+            <circle cx="49" cy="8" r="4" fill="#DC2626"/>
+          </svg>
+          <span class="brand-text">FleetVision <span class="ai-badge">AI</span></span>
+        </a>
+
+        <div class="telematics-status">
+          <span class="pulse-dot"></span>
+          <span class="status-label">Telematics Gateway: <strong>LIVE</strong></span>
+        </div>
+      </div>
+
+      <div class="nav-right">
+        <!-- User Profile Pill -->
+        <div class="user-profile-badge" id="userProfileBadge">
+          <div class="user-avatar" id="userAvatar">OP</div>
+          <div class="user-info">
+            <div class="user-name" id="userName">Loading...</div>
+            <div class="user-role-tag" id="userRoleTag">Role</div>
+          </div>
+        </div>
+
+        <button type="button" class="btn-logout" id="logoutBtn" title="Terminate Secure Session">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9"/>
+          </svg>
+          <span>Sign Out</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- Main Dashboard Body -->
+    <main class="dashboard-body">
+      <!-- Role Permission Banner -->
+      <section class="role-clearance-card">
+        <div class="clearance-header">
+          <div class="clearance-title">
+            <span class="shield-icon">🛡️</span>
+            <div>
+              <h1 id="bannerRoleTitle">Fleet Operations Console</h1>
+              <p id="bannerRoleDesc">Verifying security credentials...</p>
+            </div>
+          </div>
+          <div class="permissions-pill-container" id="permissionsPills">
+            <!-- Populated dynamically with active RBAC permissions -->
+          </div>
+        </div>
+      </section>
+
+      <!-- Grid of Modules (Visibility dynamically toggled by permissions) -->
+      <div class="modules-grid">
+
+        <!-- Module 1: Telematics Live Fleet Radar (Admin & Dispatcher) -->
+        <section class="module-card perm-gated" id="modTelematics" data-perm="telematics:full,fleet:monitor">
+          <div class="module-header">
+            <div class="module-title">
+              <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 3v9l6 3"/></svg>
+              <h3>Live Telematics Fleet Radar</h3>
+            </div>
+            <span class="badge-active">24 Units Tracked</span>
+          </div>
+          <div class="module-content">
+            <div class="fleet-units-list">
+              <div class="unit-row">
+                <span class="unit-id">Hauler #104 (Kenworth T680)</span>
+                <span class="unit-speed">64 MPH</span>
+                <span class="unit-route">Chicago ➔ Detroit</span>
+                <span class="unit-status status-moving">En Route</span>
+              </div>
+              <div class="unit-row">
+                <span class="unit-id">Hauler #218 (Freightliner Cascadia)</span>
+                <span class="unit-speed">58 MPH</span>
+                <span class="unit-route">Dallas ➔ Houston</span>
+                <span class="unit-status status-moving">En Route</span>
+              </div>
+              <div class="unit-row">
+                <span class="unit-id">Hauler #305 (Volvo VNL Electric)</span>
+                <span class="unit-speed">0 MPH</span>
+                <span class="unit-route">Columbus Hub</span>
+                <span class="unit-status status-charging">EV Fast Charge (88%)</span>
+              </div>
+              <div class="unit-row highlight">
+                <span class="unit-id">Hauler #402 (Peterbilt 579)</span>
+                <span class="unit-speed">61 MPH</span>
+                <span class="unit-route">I-80 Westbound (Mile 142)</span>
+                <span class="unit-status status-moving">Assigned to Marcus</span>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Module 2: Active Route Dispatch (Dispatcher & Admin) -->
+        <section class="module-card perm-gated" id="modDispatch" data-perm="routes:manage,dispatch:all">
+          <div class="module-header">
+            <div class="module-title">
+              <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 17l-5-5 5-5M20 12H4"/></svg>
+              <h3>Dispatch & Route Control</h3>
+            </div>
+            <button type="button" class="btn-action-small" id="btnNewRoute">+ New Cargo Dispatch</button>
+          </div>
+          <div class="module-content">
+            <table class="dispatch-table">
+              <thead>
+                <tr>
+                  <th>Manifest ID</th>
+                  <th>Origin / Dest</th>
+                  <th>Cargo Type</th>
+                  <th>ETA</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>MNF-8492</code></td>
+                  <td>Chicago Logistics Hub ➔ Detroit</td>
+                  <td>Automotive Parts (42,000 lbs)</td>
+                  <td>18:45 EDT</td>
+                  <td><span class="tag tag-ok">On Schedule</span></td>
+                </tr>
+                <tr>
+                  <td><code>MNF-8501</code></td>
+                  <td>Dallas Depot ➔ Houston Terminal</td>
+                  <td>Industrial Machinery</td>
+                  <td>21:15 CDT</td>
+                  <td><span class="tag tag-ok">Optimal Route</span></td>
+                </tr>
+                <tr>
+                  <td><code>MNF-8519</code></td>
+                  <td>I-80 Corridor ➔ Omaha Distribution</td>
+                  <td>Cold Chain Pharma (Regulated)</td>
+                  <td>Tomorrow 06:00</td>
+                  <td><span class="tag tag-warn">Geofence Active</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- Module 3: Vehicle Health & Engine Telemetry (Admin & Driver) -->
+        <section class="module-card perm-gated" id="modDiagnostics" data-perm="telematics:full,telemetry:read">
+          <div class="module-header">
+            <div class="module-title">
+              <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.77 3.77z"/></svg>
+              <h3>Vehicle Diagnostics — Unit #402</h3>
+            </div>
+            <span class="badge-healthy">All Sensors Nominal</span>
+          </div>
+          <div class="module-content">
+            <div class="telemetry-gauges">
+              <div class="gauge-card">
+                <div class="gauge-label">Fuel / Energy</div>
+                <div class="gauge-val">84%</div>
+                <div class="gauge-bar"><div class="fill" style="width: 84%"></div></div>
+              </div>
+              <div class="gauge-card">
+                <div class="gauge-label">Coolant Temp</div>
+                <div class="gauge-val">192°F</div>
+                <div class="gauge-bar"><div class="fill green" style="width: 60%"></div></div>
+              </div>
+              <div class="gauge-card">
+                <div class="gauge-label">Tire Pressure</div>
+                <div class="gauge-val">105 PSI</div>
+                <div class="gauge-bar"><div class="fill green" style="width: 90%"></div></div>
+              </div>
+              <div class="gauge-card">
+                <div class="gauge-label">Brake Pad Life</div>
+                <div class="gauge-val">91%</div>
+                <div class="gauge-bar"><div class="fill green" style="width: 91%"></div></div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Module 4: Driver Pre-Trip Safety Inspection (Driver/Operator) -->
+        <section class="module-card perm-gated" id="modInspection" data-perm="checklist:submit,vehicle:assigned">
+          <div class="module-header">
+            <div class="module-title">
+              <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
+              <h3>Driver Pre-Trip Digital Inspection</h3>
+            </div>
+            <span class="tag tag-ok">Shift Active</span>
+          </div>
+          <div class="module-content">
+            <form id="inspectionChecklist" class="checklist-form">
+              <label class="check-item">
+                <input type="checkbox" checked disabled>
+                <span>Air brake pressure & governor test</span>
+              </label>
+              <label class="check-item">
+                <input type="checkbox" checked disabled>
+                <span>Trailer hitch, kingpin & fifth-wheel latch</span>
+              </label>
+              <label class="check-item">
+                <input type="checkbox" checked>
+                <span>Cargo seal security check (Seal #NV-9921)</span>
+              </label>
+              <label class="check-item">
+                <input type="checkbox" checked>
+                <span>Emergency roadside kit & fire extinguisher certified</span>
+              </label>
+              <button type="button" class="btn-primary-small" id="btnSubmitInspection">Submit Inspection Sign-Off</button>
+            </form>
+          </div>
+        </section>
+
+        <!-- Module 5: Authentik SSO & Security Audit Trail (Strictly Admin) -->
+        <section class="module-card perm-gated" id="modAudit" data-perm="audit:view,system:config">
+          <div class="module-header">
+            <div class="module-title">
+              <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+              <h3>Authentik Identity & Security Audit Trail</h3>
+            </div>
+            <span class="badge-secure">Strict RBAC Enforced</span>
+          </div>
+          <div class="module-content">
+            <div class="audit-stream">
+              <div class="audit-row">
+                <span class="audit-time">16:58:12</span>
+                <span class="audit-tag tag-success">OIDC_AUTH_OK</span>
+                <span class="audit-msg">User authenticated via Authentik OpenID Connect Provider with PKCE SHA-256</span>
+              </div>
+              <div class="audit-row">
+                <span class="audit-time">16:58:13</span>
+                <span class="audit-tag tag-info">RBAC_CLAIM</span>
+                <span class="audit-msg">Extracted Authentik group claims: Assigned role clearance [admin]</span>
+              </div>
+              <div class="audit-row">
+                <span class="audit-time">16:58:14</span>
+                <span class="audit-tag tag-info">SESSION_ISSUED</span>
+                <span class="audit-msg">Issued HttpOnly SameSite=Strict HMAC-SHA256 session token</span>
+              </div>
+              <div class="audit-row">
+                <span class="audit-time">16:58:30</span>
+                <span class="audit-tag tag-warn">GEOFENCE_AUDIT</span>
+                <span class="audit-msg">Corridor A-12 autonomous route lock verified with GPS telemetry engine</span>
+              </div>
+            </div>
+          </div>
+        </section>
+
+      </div>
+    </main>
+  </div>
+
+  <script src="dashboard.js"></script>
+</body>
+</html>
