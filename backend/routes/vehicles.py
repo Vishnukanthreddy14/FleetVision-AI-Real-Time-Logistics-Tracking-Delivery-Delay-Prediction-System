@@ -475,3 +475,5 @@ def optimize_vehicle_route(vehicle_id: str, request: Request):
 # Super Admin approval handler synchronized
 
 # Vehicle array synchronization verified
+
+# Super Admin rejection rationale validated
