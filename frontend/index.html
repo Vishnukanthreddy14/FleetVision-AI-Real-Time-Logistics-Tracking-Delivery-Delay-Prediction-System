@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FleetVisionAI | Real-Time Logistics Tracking & Delay Prediction</title>
+  <meta name="description" content="Digital air-traffic control system for ground transportation powered by Random Forest, LSTM neural networks, real-time GPS telemetry, and MongoDB.">
+  <link rel="stylesheet" href="/static/css/variables.css">
+  <link rel="stylesheet" href="/static/css/landing.css">
+</head>
+<body>
+
+  <!-- Navigation Bar -->
+  <nav class="navbar">
+    <a href="/" class="brand" id="brandLogo">
+      <div class="brand-icon">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <circle cx="12" cy="12" r="10"></circle>
+          <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+          <path d="M2 12h20"></path>
+        </svg>
+      </div>
+      <span>FleetVisionAI</span>
+    </a>
+
+    <div class="nav-actions">
+      <div class="live-badge">
+        <span class="pulse-dot"></span>
+        <span>STREAMING 14 VEHICLES</span>
+      </div>
+
+      <button class="theme-toggle-btn" id="themeToggleBtn" title="Toggle Theme" aria-label="Toggle Theme">
+        ☀️
+      </button>
+
+      <a href="/login" class="btn-primary" id="openLoginModalBtn" style="text-decoration: none;">
+        <span>Launch Portal</span>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M5 12h14M12 5l7 7-7 7"/>
+        </svg>
+      </a>
+    </div>
+  </nav>
+
+  <!-- Hero Section -->
+  <header class="hero">
+    <div class="hero-pill">
+      <span>⚡ Real-Time Digital Air-Traffic Control for Ground Freight</span>
+    </div>
+
+    <h1 class="hero-title">
+      Intelligent Fleet Telemetry &<br>Predictive Logistics Operations
+    </h1>
+
+    <p class="hero-subtitle">
+      FleetVisionAI ingests live GPS and delivery telemetry from 14 regional transport corridors,
+      combines <strong>Random Forest</strong> and deep <strong>LSTM neural networks</strong> for sub-minute ETA forecasting,
+      and empowers logistics teams to proactively mitigate delays before they cascade.
+    </p>
+
+    <div class="hero-cta">
+      <button class="btn-primary" onclick="quickLoginAsRole('admin')">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+        </svg>
+        <span>Explore as Admin</span>
+      </button>
+
+      <button class="btn-secondary" onclick="quickLoginAsRole('manager')">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="3"></circle>
+          <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+        </svg>
+        <span>Explore as Manager</span>
+      </button>
+
+      <button class="btn-secondary" onclick="quickLoginAsRole('user')">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+          <circle cx="12" cy="7" r="4"></circle>
+        </svg>
+        <span>Track as Client/Driver</span>
+      </button>
+    </div>
+
+    <!-- 1-Click Role Login Cards -->
+    <div class="role-quickselect">
+      <div class="role-card admin" data-quick-role="admin">
+        <div class="role-header">
+          <span class="role-badge admin">Full Control</span>
+          <span style="font-size: 1.5rem;">👑</span>
+        </div>
+        <h3 class="role-title">Enterprise Admin</h3>
+        <p class="role-desc">Full fleet supervision, 5-minute simulation control, live incident injection, and ML retraining triggers.</p>
+        <div class="role-btn">Access Admin Dashboard →</div>
+      </div>
+
+      <div class="role-card manager" data-quick-role="manager">
+        <div class="role-header">
+          <span class="role-badge manager">Operations</span>
+          <span style="font-size: 1.5rem;">📊</span>
+        </div>
+        <h3 class="role-title">Dispatch Manager</h3>
+        <p class="role-desc">Route optimization, fuel efficiency analytics, driver performance scoring, and delay risk mitigation.</p>
+        <div class="role-btn">Access Manager Dashboard →</div>
+      </div>
+
+      <div class="role-card user" data-quick-role="user">
+        <div class="role-header">
+          <span class="role-badge user">Tracking</span>
+          <span style="font-size: 1.5rem;">🚚</span>
+        </div>
+        <h3 class="role-title">Client / Driver Operator</h3>
+        <p class="role-desc">Personal vehicle tracking, countdown ETA view, turn-by-turn waypoint milestones, and instant notifications.</p>
+        <div class="role-btn">Access Tracking Portal →</div>
+      </div>
+    </div>
+
+    <!-- Live Stats Ticker -->
+    <div class="stat-ticker">
+      <div class="stat-item">
+        <div class="stat-val" id="tickerVehicleCount">14</div>
+        <div class="stat-label">Active Corridors Monitored</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-val" id="tickerOnTime">98.2%</div>
+        <div class="stat-label">On-Time Arrival Rate</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-val" id="tickerAvgEta">185 min</div>
+        <div class="stat-label">Fleet Average ETA</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-val" id="tickerEfficiency">96.4/100</div>
+        <div class="stat-label">Fuel Efficiency Index</div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Core Features Section -->
+  <section class="features-section">
+    <div class="section-header">
+      <h2 class="section-title">Engineered for Ground Logistics Mastery</h2>
+      <p class="section-subtitle">
+        Combining low-latency telemetry pipelines, deep neural trajectory forecasting, and real-time MongoDB analytics.
+      </p>
+    </div>
+
+    <div class="features-grid">
+      <div class="feature-card">
+        <div class="feature-icon">🧠</div>
+        <h3 class="feature-title">Dual ML Prediction Engine</h3>
+        <p class="feature-desc">
+          Integrates <strong>Random Forest</strong> for continuous ETA regression and delay classification with <strong>LSTM recurrent networks</strong> to capture non-linear deceleration and traffic progression dynamics.
+        </p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon">🌐</div>
+        <h3 class="feature-title">Living Digital Map</h3>
+        <p class="feature-desc">
+          Watch every commercial vehicle leave a glowing thread of operational intelligence behind it on an interactive OpenStreetMap canvas with dynamic risk halos and animated vector icons.
+        </p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon">⏱️</div>
+        <h3 class="feature-title">5-Minute Demonstration Simulator</h3>
+        <p class="feature-desc">
+          Demonstrate end-to-end trips for 14 cross-country vehicles in a high-fidelity 5-minute loop with pause, reset, 1x/2x/5x speed multipliers, and manual incident injection.
+        </p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon">🍃</div>
+        <h3 class="feature-title">Dynamic Route Optimization</h3>
+        <p class="feature-desc">
+          Automated AI advisory alerts dispatchers to bypass traffic bottlenecks, recommending optimal detour waypoints and computing precise minutes and liters of fuel saved.
+        </p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon">🍃</div>
+        <h3 class="feature-title">Fuel & Speed Telemetry</h3>
+        <p class="feature-desc">
+          Continuous fuel burn curves and speed distribution telemetry ingested into MongoDB to prevent fuel theft, detect engine anomalies, and ensure driver safety.
+        </p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon">🛡️</div>
+        <h3 class="feature-title">Role-Based Access Control</h3>
+        <p class="feature-desc">
+          Tailored interfaces and security permissions for Administrators, Dispatch Managers, and Clients/Drivers with zero-config 1-click evaluation access.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Login Modal -->
+  <div class="modal-overlay" id="loginModal">
+    <div class="modal-content">
+      <button class="modal-close" id="closeLoginModalBtn">&times;</button>
+      <h3 style="font-size: 1.5rem; font-weight: 800; margin-bottom: 0.5rem;">Access FleetVisionAI</h3>
+      <p style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 1.5rem;">
+        Sign in to your organization workspace or choose a 1-click demo role below.
+      </p>
+
+      <form id="loginForm">
+        <div class="form-group">
+          <label class="form-label" for="loginEmail">Corporate Email</label>
+          <input class="form-input" id="loginEmail" type="email" placeholder="admin@fleetvision.ai" required value="admin@fleetvision.ai">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="loginPassword">Password</label>
+          <input class="form-input" id="loginPassword" type="password" placeholder="••••••••" required value="admin123">
+        </div>
+
+        <button type="submit" class="btn-primary" style="width: 100%; justify-content: center; margin-top: 0.5rem;">
+          Sign In to Dashboard
+        </button>
+      </form>
+
+      <div style="margin: 1.5rem 0 1rem; text-align: center; font-size: 0.8rem; color: var(--text-muted); position: relative;">
+        <span>OR 1-CLICK DEMO LOGIN</span>
+      </div>
+
+      <div style="display: flex; gap: 0.5rem;">
+        <button class="btn-secondary" style="flex: 1; font-size: 0.8rem; justify-content: center;" onclick="quickLoginAsRole('admin')">Admin</button>
+        <button class="btn-secondary" style="flex: 1; font-size: 0.8rem; justify-content: center;" onclick="quickLoginAsRole('manager')">Manager</button>
+        <button class="btn-secondary" style="flex: 1; font-size: 0.8rem; justify-content: center;" onclick="quickLoginAsRole('user')">User</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer>
+    <p>FleetVisionAI • Real-Time Logistics Intelligence & Delay Prediction System</p>
+    <p style="margin-top: 0.5rem; font-size: 0.8rem;">Powered by FastAPI, MongoDB, Random Forest, LSTM, and Leaflet Maps.</p>
+  </footer>
+
+  <script src="/static/js/auth.js"></script>
+  <script src="/static/js/landing.js"></script>
+</body>
+</html>
