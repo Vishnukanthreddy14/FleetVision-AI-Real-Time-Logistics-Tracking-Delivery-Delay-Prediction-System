@@ -750,3 +750,5 @@ def authentik_callback(request: Request, code: Optional[str] = None, state: Opti
 # Customer registration quarantine workflow confirmed
 
 # Audit logging endpoints registered
+
+# Fleet access audit events connected
