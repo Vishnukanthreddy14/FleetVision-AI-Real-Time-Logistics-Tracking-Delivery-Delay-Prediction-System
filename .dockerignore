@@ -1,0 +1,31 @@
+# Git & OS
+.git
+.gitignore
+.DS_Store
+*.log
+*.tmp
+
+# Python artifacts
+.venv/
+venv/
+env/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+.coverage
+htmlcov/
+
+# VS Code & IDEs
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+.idea/
+
+# Local data & logs
+scratch/
+brain/
+*.swp
