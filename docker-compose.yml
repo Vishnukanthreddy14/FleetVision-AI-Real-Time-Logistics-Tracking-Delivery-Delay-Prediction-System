@@ -218,3 +218,5 @@ volumes:
 networks:
   fleetvision-net:
     driver: bridge
+
+# Health check probes validated
