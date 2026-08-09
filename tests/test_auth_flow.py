@@ -276,3 +276,5 @@ def test_road_route_returns_cached_road_geometry_and_checks_customer_access():
     assert denied.status_code == 403
 
 # Simulation controls RBAC tested
+
+# Customer vehicle scoping & isolation test verified
