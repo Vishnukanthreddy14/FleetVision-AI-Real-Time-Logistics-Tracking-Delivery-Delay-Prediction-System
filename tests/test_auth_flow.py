@@ -278,3 +278,5 @@ def test_road_route_returns_cached_road_geometry_and_checks_customer_access():
 # Simulation controls RBAC tested
 
 # Customer vehicle scoping & isolation test verified
+
+# Road route geometry caching test confirmed
