@@ -109,3 +109,5 @@ def test_admin_tells_superadmin_and_approval_flow():
 
 
 # 403 Forbidden check verified
+
+# Vehicle unlock test assertion confirmed
