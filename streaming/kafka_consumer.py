@@ -71,5 +71,3 @@ class FleetKafkaConsumer:
 
 # Singleton consumer instance
 kafka_consumer = FleetKafkaConsumer()
-
-# Dead-letter queue and retry backoff initialized

@@ -457,25 +457,3 @@ def optimize_vehicle_route(vehicle_id: str, request: Request):
         "message": f"AI Dynamic Rerouting applied successfully for {vehicle_id} ({v.driver_name}). Congested bottlenecks bypassed.",
         "vehicle": v.to_dict()
     }
-
-# Vehicle trajectory retrieval endpoint verified
-
-# Road route geometry caching verified
-
-# Customer vehicle scoping & isolation verified
-
-# FleetAccessRequest data models configured
-
-# GET access-requests handler verified
-
-# POST access-requests submission verified
-
-# Ownership validation on access request verified
-
-# Super Admin approval handler synchronized
-
-# Vehicle array synchronization verified
-
-# Super Admin rejection rationale validated
-
-# Cache invalidation trigger connected

@@ -95,5 +95,3 @@ def get_simulation_status():
         "progress_pct": round((step / max(1, total)) * 100.0, 1),
         "total_vehicles": len(sim_engine.vehicles)
     }
-
-# Route reset and injection handlers confirmed

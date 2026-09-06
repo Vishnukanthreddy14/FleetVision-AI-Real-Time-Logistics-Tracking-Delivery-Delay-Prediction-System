@@ -466,5 +466,3 @@ export const FAQ_LIST = [
     a: "Access to the real-time operations dashboard is strictly gated. Dispatchers, safety controllers, and fleet administrators sign in with verified credentials to manage consignments, pilots, and route optimizations."
   }
 ];
-
-// Highway corridor waypoints calibrated

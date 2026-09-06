@@ -185,5 +185,3 @@ chmod +x start.sh
 ## 📄 License
 
 MIT License. Designed and developed for commercial fleet telematics and intelligent transport operations.
-
-<!-- Quickstart credentials and setup guide validated -->

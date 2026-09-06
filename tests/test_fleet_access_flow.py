@@ -107,9 +107,3 @@ def test_admin_tells_superadmin_and_approval_flow():
     assert reject_res.json()["request"]["status"] == "rejected"
     assert reject_res.json()["request"]["rejection_reason"] == "Customer SLA tier does not cover Samruddhi Corridor."
 
-
-# 403 Forbidden check verified
-
-# Vehicle unlock test assertion confirmed
-
-# Audit trail generation assertion confirmed

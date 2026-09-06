@@ -744,11 +744,3 @@ def authentik_callback(request: Request, code: Optional[str] = None, state: Opti
         logger.warning(f"Authentik SSO token exchange failed: {e}. Falling back to demo Admin login.")
         record_audit("AUTH_FAILURE", client_ip, "Authentik SSO", f"Authentik connection error: {str(e)}", "WARN")
         return Response(status_code=status.HTTP_302_FOUND, headers={"Location": "/login?error=authentik_unreachable"})
-
-# Session dependency validation injected
-
-# Customer registration quarantine workflow confirmed
-
-# Audit logging endpoints registered
-
-# Fleet access audit events connected

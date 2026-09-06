@@ -203,5 +203,3 @@ class MLInferenceEngine:
 
 # Singleton inference instance
 ml_engine = MLInferenceEngine()
-
-# Inference caching & heuristic fallbacks configured

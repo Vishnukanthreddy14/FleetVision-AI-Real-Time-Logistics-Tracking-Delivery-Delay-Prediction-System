@@ -149,7 +149,3 @@ def train_xgboost():
 
 if __name__ == "__main__":
     train_xgboost()
-
-# Feature engineering pipeline enhanced
-
-# XGBoost ETA regression model evaluated
