@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FleetVisionAI — Fleet Operations Login</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/css/variables.css?v=20260910_sso">
+  <link rel="stylesheet" href="/static/css/login.css?v=20260910_sso">
+</head>
+<body>
+  <div class="page-container">
+    <!-- Left Hero Section -->
+    <header class="hero-section">
+      <div class="brand-container">
+        <!-- FleetVisionAI Dynamic Brand Logo -->
+        <a href="/" class="brand-logo" aria-label="FleetVisionAI Home">
+          <svg class="logo-mark" viewBox="0 0 56 44" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M4 32C14 32 20 25 28 17C35 9 44 4 52 4C38 8 28 17 22 25C17 31 11 36 4 38L4 32Z" fill="currentColor"/>
+            <path d="M12 40C20 40 26 35 34 27C40 21 47 16 54 14C43 17 35 24 29 32C24 37 19 40 12 40Z" fill="#DC2626"/>
+            <circle cx="49" cy="8" r="4" fill="#DC2626"/>
+          </svg>
+          <span class="brand-name">FleetVision<span class="ai-badge">AI</span></span>
+        </a>
+      </div>
+
+      <div class="hero-content">
+        <h1 class="hero-title">
+          Welcome<br>
+          to The FleetVisionAI<br>
+          User Area
+        </h1>
+
+        <p class="hero-subtitle">
+          To request an enterprise account,<br>
+          just call fleet dispatch
+        </p>
+
+        <div class="hotline-numbers">
+          <a href="tel:+245041660355" class="hotline-link">+245 04 166 0355</a>
+          <a href="tel:+347423902456" class="hotline-link">+347 42 390 2456</a>
+        </div>
+
+        <!-- Enterprise Security Verification Badges -->
+        <div class="security-trust-badges">
+          <div class="trust-badge">
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+            <span>256-Bit TLS 1.3 Encryption</span>
+          </div>
+          <div class="trust-badge">
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            <span>Authentik OIDC & PKCE Governed</span>
+          </div>
+        </div>
+
+        <div class="compliance-disclaimer">
+          RESTRICTED SYSTEM • Authorized commercial fleet operators only. Telemetry streams, model predictions, and dispatch commands are audited under 49 CFR Part 395.
+        </div>
+
+        <div class="social-links">
+          <a href="/showcase" class="return-link" title="Explore FleetVision AI Showcase">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M5 12h14M12 5l7 7-7 7"/>
+            </svg>
+            <span>Explore Fleet Showcase</span>
+          </a>
+        </div>
+      </div>
+    </header>
+
+    <!-- Right 3D Interactive Card Stage -->
+    <main class="stage-section">
+      <div class="card-orbit-wrapper">
+        <!-- Floating Transport & Telematics Icons Ring -->
+        <div class="floating-icons-container" id="floatingIconsContainer" aria-hidden="true">
+          <!-- Dynamically populated and positioned by login.js with SVG transport icons -->
+        </div>
+
+        <!-- 3D Perspective Card Scene -->
+        <div class="card-3d-scene" id="card3dScene">
+          <div class="card-3d-flipper" id="cardFlipper">
+            
+            <!-- Front Face: Login -->
+            <div class="card-face card-front" id="cardFront" role="region" aria-labelledby="loginHeading">
+              <div class="card-header-flex">
+                <h2 id="loginHeading" class="card-title">Log in</h2>
+                <span class="auth-security-pill" title="Protected with Authentik OIDC & PKCE">
+                  <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                  Authentik OIDC
+                </span>
+              </div>
+
+              <!-- Security Status Alert Banner (Access Denied / Logged Out) -->
+              <div id="authAlertBanner" class="auth-alert-banner" style="display: none;"></div>
+              
+              <p class="card-desc">
+                This is a secure system and you will need to provide your login details to access the site
+              </p>
+
+              <!-- Authentik SSO Action -->
+              <a href="/api/auth/authentik/login" class="btn-authentik-sso" id="authentikSsoBtn" title="Instant SSO with Authentik OIDC Claims">
+                <svg class="authentik-icon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+                </svg>
+                <span>Sign in with Authentik SSO (Instant OIDC)</span>
+              </a>
+              <div style="text-align: center; margin-top: 4px; margin-bottom: 2px;">
+                <a href="/api/auth/authentik/login?mode=docker" style="font-size: 0.72rem; color: #64748b; text-decoration: underline;" title="Requires pre-configured Authentik user in Docker">
+                  (Or connect to local Authentik Docker on port 9000)
+                </a>
+              </div>
+
+              <div class="auth-divider">
+                <span>or continue with credentials</span>
+              </div>
+
+              <form id="loginForm" class="auth-form" novalidate>
+                <div class="form-group">
+                  <label for="loginEmail" class="visually-hidden">User name or email</label>
+                  <input 
+                    type="text" 
+                    id="loginEmail" 
+                    name="email" 
+                    class="form-input" 
+                    placeholder="User name or email" 
+                    autocomplete="username" 
+                    required
+                  >
+                </div>
+
+                <div class="form-group password-group">
+                  <label for="loginPassword" class="visually-hidden">Password</label>
+                  <input 
+                    type="password" 
+                    id="loginPassword" 
+                    name="password" 
+                    class="form-input" 
+                    placeholder="Password" 
+                    autocomplete="current-password" 
+                    required
+                  >
+                  <button type="button" class="btn-toggle-pwd" id="toggleLoginPwd" aria-label="Toggle password visibility">
+                    <svg class="eye-open" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                      <circle cx="12" cy="12" r="3"></circle>
+                    </svg>
+                    <svg class="eye-closed hidden" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+                      <line x1="1" y1="1" x2="23" y2="23"></line>
+                    </svg>
+                  </button>
+                </div>
+
+                <div class="form-links">
+                  <button type="button" class="btn-link forgot-password-trigger" id="toForgotPwdBtn">
+                    Forgot password?
+                  </button>
+                </div>
+
+                <button type="submit" class="btn-primary" id="loginSubmitBtn">
+                  <span class="btn-text">Log in</span>
+                  <span class="btn-spinner hidden" aria-hidden="true"></span>
+                </button>
+              </form>
+
+              <!-- Role Personas Quick Tester -->
+              <div class="persona-selector">
+                <div class="persona-label">⚡ 1-Click Instant Login (Auto-Redirects):</div>
+                <div class="persona-chips">
+                  <button type="button" class="chip active" data-role="admin" title="1-Click: Log in as Director James Vance (Full Fleet Control)">
+                    👑 Admin
+                  </button>
+                  <button type="button" class="chip" data-role="manager" title="1-Click: Log in as Sarah Chen (Dispatch & Routes)">
+                    🧭 Manager
+                  </button>
+                  <button type="button" class="chip" data-role="user" title="1-Click: Log in as Marcus Brody (Assigned Vehicle)">
+                    🚚 Driver
+                  </button>
+                </div>
+              </div>
+
+            </div>
+
+            <!-- Back Face: Reset Password -->
+            <div class="card-face card-back" id="cardBack" role="region" aria-labelledby="resetHeading">
+              <h2 id="resetHeading" class="card-title">Reset password</h2>
+              <p class="card-desc">
+                Please enter your credentials first.<br>
+                Won't be shared publicly,<br>
+                won't be spammed.
+              </p>
+
+              <form id="resetForm" class="auth-form" novalidate>
+                <div class="form-group">
+                  <label for="resetUsername" class="visually-hidden">User name</label>
+                  <input 
+                    type="text" 
+                    id="resetUsername" 
+                    name="reset_username" 
+                    class="form-input" 
+                    placeholder="User name" 
+                    autocomplete="username" 
+                    required
+                  >
+                </div>
+
+                <div class="form-group">
+                  <label for="resetEmail" class="visually-hidden">Email address</label>
+                  <input 
+                    type="email" 
+                    id="resetEmail" 
+                    name="reset_email" 
+                    class="form-input" 
+                    placeholder="Email address" 
+                    autocomplete="email" 
+                    required
+                  >
+                </div>
+
+                <button type="submit" class="btn-primary" id="resetSubmitBtn">
+                  <span class="btn-text">Reset password</span>
+                  <span class="btn-spinner hidden" aria-hidden="true"></span>
+                </button>
+
+                <div class="form-footer-link">
+                  <button type="button" class="btn-link back-to-login-trigger" id="backToLoginBtn">
+                    Back to log-in page
+                  </button>
+                </div>
+              </form>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- Global Toast Alert Message -->
+    <div id="toastMessage" class="toast hidden" role="status" aria-live="polite">
+      <div class="toast-icon" id="toastIcon"></div>
+      <div class="toast-text" id="toastText"></div>
+    </div>
+  </div>
+
+  <script src="/static/js/auth.js?v=20260910_authfix"></script>
+  <script src="/static/js/login.js?v=20260910_authfix"></script>
+</body>
+</html>

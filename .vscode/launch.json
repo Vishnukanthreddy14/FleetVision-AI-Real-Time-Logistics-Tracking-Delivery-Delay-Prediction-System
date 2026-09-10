@@ -1,0 +1,58 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "🚀 FleetVision AI: FastApi Backend (F5 Debug)",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}/run.py",
+      "console": "integratedTerminal",
+      "justMyCode": true,
+      "env": {
+        "PYTHONPATH": "${workspaceFolder}",
+        "PORT": "8000",
+        "HOST": "0.0.0.0",
+        "MONGO_URI": "mongodb://localhost:27017",
+        "DATABASE_NAME": "fleetvision_ai",
+        "AUTHENTIK_HOST": "http://localhost:9000"
+      }
+    },
+    {
+      "name": "🧠 ML: Retrain Random Forest Models",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}/ml/train_rf.py",
+      "console": "integratedTerminal",
+      "justMyCode": true,
+      "env": {
+        "PYTHONPATH": "${workspaceFolder}"
+      }
+    },
+    {
+      "name": "📊 Data: Generate Synthetic Indian Telemetry",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}/data/synthetic_generator.py",
+      "console": "integratedTerminal",
+      "justMyCode": true,
+      "env": {
+        "PYTHONPATH": "${workspaceFolder}"
+      }
+    },
+    {
+      "name": "🐳 Docker: Attach to Container Debugger (Port 5678)",
+      "type": "debugpy",
+      "request": "attach",
+      "connect": {
+        "host": "localhost",
+        "port": 5678
+      },
+      "pathMappings": [
+        {
+          "localRoot": "${workspaceFolder}",
+          "remoteRoot": "/app"
+        }
+      ]
+    }
+  ]
+}
