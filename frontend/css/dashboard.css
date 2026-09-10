@@ -1,0 +1,914 @@
+/* FleetVisionAI: Operations Dashboard Styles */
+
+.dash-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+/* Dashboard Top Header */
+.dash-header {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.85rem 1.75rem;
+  background: var(--bg-glass);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--border-color);
+  gap: 1.5rem;
+}
+
+.dash-header-left {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.sim-control-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.4rem 0.85rem;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+}
+
+.sim-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: var(--radius-sm);
+  background: var(--bg-primary);
+  border: 1px solid var(--border-color);
+  color: var(--text-primary);
+  cursor: pointer;
+  font-size: 0.95rem;
+  transition: var(--transition);
+}
+
+.sim-btn:hover {
+  border-color: var(--accent-cyan);
+  color: var(--accent-cyan);
+}
+
+.sim-btn.primary {
+  background: var(--accent-cyan);
+  color: #FFF;
+  border-color: var(--accent-cyan);
+}
+
+.speed-select {
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
+  padding: 0.35rem 0.6rem;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  cursor: pointer;
+  outline: none;
+}
+
+.sim-progress-wrap {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  min-width: 170px;
+}
+
+.sim-progress-bar {
+  flex: 1;
+  height: 6px;
+  background: var(--bg-primary);
+  border-radius: 3px;
+  overflow: hidden;
+  position: relative;
+}
+
+.sim-progress-fill {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, var(--accent-cyan), var(--accent-emerald));
+  transition: width 0.3s ease;
+}
+
+.sim-time-text {
+  font-size: 0.75rem;
+  font-family: var(--font-mono);
+  color: var(--text-muted);
+}
+
+.dash-header-right {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+}
+
+.user-profile-badge {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.35rem 0.85rem;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 9999px;
+}
+
+.user-avatar {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.user-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.user-name {
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+.user-role-label {
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* KPI Banner */
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1.25rem;
+  padding: 1.5rem 1.75rem 0.75rem;
+}
+
+.kpi-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 1.25rem;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  position: relative;
+  overflow: hidden;
+  transition: var(--transition);
+}
+
+.kpi-card:hover {
+  transform: translateY(-2px);
+  border-color: var(--border-glow);
+  box-shadow: var(--shadow-card);
+}
+
+.kpi-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.kpi-title {
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  letter-spacing: 0.5px;
+}
+
+.kpi-icon {
+  font-size: 1.2rem;
+  color: var(--accent-cyan);
+}
+
+.kpi-value {
+  font-size: 2rem;
+  font-weight: 800;
+  font-family: var(--font-mono);
+  color: var(--text-primary);
+  margin-bottom: 0.25rem;
+}
+
+.kpi-subtext {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+}
+
+/* Main Dashboard Workspace */
+.dash-workspace {
+  display: grid;
+  grid-template-columns: 1.5fr 1fr;
+  gap: 1.25rem;
+  padding: 0.75rem 1.75rem 1.5rem;
+  flex: 1;
+}
+
+/* Map View Column */
+.map-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  min-height: 540px;
+  position: relative;
+}
+
+.map-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.85rem 1.25rem;
+  background: var(--bg-glass);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.map-title {
+  font-size: 0.95rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.map-tools {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+#map {
+  flex: 1;
+  width: 100%;
+  min-height: 480px;
+  background: var(--bg-primary);
+}
+
+/* Leaflet Tile Dark Mode Adjustment */
+[data-theme="dark"] .leaflet-tile-pane {
+  filter: var(--map-tile-filter);
+}
+
+/* ==========================================================================
+   Google Maps Navigation Directions & Vehicle Marker Animation Engine
+   ========================================================================== */
+
+/* Smooth Leaflet marker interpolation */
+.custom-gmaps-truck-icon {
+  transition: transform 0.5s linear, left 0.5s linear, top 0.5s linear !important;
+  pointer-events: auto;
+}
+
+.gmaps-nav-wrapper {
+  position: relative;
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+/* Radar Pulse Halo Aura */
+.gmaps-nav-aura {
+  position: absolute;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: rgba(26, 115, 232, 0.25);
+  border: 1.5px solid rgba(26, 115, 232, 0.5);
+  animation: gmapsAuraPulse 2s ease-out infinite;
+  pointer-events: none;
+}
+
+@keyframes gmapsAuraPulse {
+  0% {
+    transform: scale(0.8);
+    opacity: 0.9;
+  }
+  70% {
+    transform: scale(1.6);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1.8);
+    opacity: 0;
+  }
+}
+
+/* Headlight Light Cone radiating onto highway */
+.gmaps-headlight-cone {
+  position: absolute;
+  top: -18px;
+  width: 24px;
+  height: 28px;
+  background: linear-gradient(to top, rgba(255, 255, 255, 0.35), rgba(255, 255, 255, 0));
+  clip-path: polygon(30% 100%, 70% 100%, 100% 0%, 0% 0%);
+  transform-origin: center bottom;
+  pointer-events: none;
+  opacity: 0.65;
+  transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Rotatable Nav Token (Rotates smoothly to vehicle bearing) */
+.gmaps-nav-token {
+  position: relative;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: #FFFFFF;
+  border: 2px solid #1A73E8;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35), 0 0 10px rgba(26, 115, 232, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #1A73E8;
+  transform-origin: center center;
+  transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.3s ease;
+  z-index: 2;
+}
+
+/* Forward Directional Pointer Arrow (Google Maps chevron) */
+.gmaps-nav-arrow {
+  position: absolute;
+  top: -7px;
+  width: 0;
+  height: 0;
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  border-bottom: 7px solid #1A73E8;
+  filter: drop-shadow(0 -1px 2px rgba(26, 115, 232, 0.5));
+}
+
+.gmaps-truck-svg {
+  width: 17px;
+  height: 17px;
+}
+
+/* Vehicle ID Tag */
+.gmaps-nav-tag {
+  position: absolute;
+  bottom: -15px;
+  background: rgba(15, 23, 42, 0.9);
+  color: #F8FAFC;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  font-weight: 700;
+  padding: 1px 4px;
+  border-radius: 4px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  white-space: nowrap;
+  pointer-events: none;
+  letter-spacing: 0.3px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.3);
+}
+
+/* Risk Variants */
+.gmaps-nav-wrapper.low-risk .gmaps-nav-token {
+  border-color: #1A73E8;
+  color: #1A73E8;
+}
+.gmaps-nav-wrapper.low-risk .gmaps-nav-arrow {
+  border-bottom-color: #1A73E8;
+}
+
+.gmaps-nav-wrapper.mod-risk .gmaps-nav-token {
+  border-color: #FBBC04;
+  color: #D97706;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35), 0 0 10px rgba(251, 188, 4, 0.6);
+}
+.gmaps-nav-wrapper.mod-risk .gmaps-nav-aura {
+  background: rgba(251, 188, 4, 0.2);
+  border-color: rgba(251, 188, 4, 0.5);
+}
+.gmaps-nav-wrapper.mod-risk .gmaps-nav-arrow {
+  border-bottom-color: #FBBC04;
+}
+
+.gmaps-nav-wrapper.high-risk .gmaps-nav-token {
+  border-color: #EA4335;
+  color: #EA4335;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35), 0 0 14px rgba(234, 67, 53, 0.8);
+  animation: gmapsAlertPulse 1.2s ease-in-out infinite;
+}
+.gmaps-nav-wrapper.high-risk .gmaps-nav-aura {
+  background: rgba(234, 67, 53, 0.25);
+  border-color: rgba(234, 67, 53, 0.7);
+}
+.gmaps-nav-wrapper.high-risk .gmaps-nav-arrow {
+  border-bottom-color: #EA4335;
+}
+
+@keyframes gmapsAlertPulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.12); }
+}
+
+/* Selected Vehicle Spotlight */
+.gmaps-nav-wrapper.selected-vehicle .gmaps-nav-token {
+  border-width: 3px;
+  box-shadow: 0 0 0 4px rgba(26, 115, 232, 0.4), 0 4px 12px rgba(0,0,0,0.4);
+}
+
+/* ==========================================================================
+   Google Maps Destination Pin & Radar Pulse
+   ========================================================================== */
+.custom-gmaps-dest-icon {
+  pointer-events: auto;
+}
+
+.gmaps-dest-pin-wrap {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: pointer;
+}
+
+.gmaps-dest-pin {
+  filter: drop-shadow(0 3px 6px rgba(0, 0, 0, 0.4));
+  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.gmaps-dest-pin-wrap:hover .gmaps-dest-pin {
+  transform: translateY(-4px) scale(1.1);
+}
+
+.gmaps-dest-pulse {
+  position: absolute;
+  bottom: 8px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 18px;
+  height: 8px;
+  border-radius: 50%;
+  background: rgba(234, 67, 53, 0.4);
+  animation: destRingPulse 1.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) infinite;
+  pointer-events: none;
+}
+
+@keyframes destRingPulse {
+  0% {
+    transform: translateX(-50%) scale(0.6);
+    opacity: 0.8;
+  }
+  100% {
+    transform: translateX(-50%) scale(2.4);
+    opacity: 0;
+  }
+}
+
+.gmaps-dest-label {
+  margin-top: 2px;
+  background: #DC2626;
+  color: #FFFFFF;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 800;
+  padding: 2px 7px;
+  border-radius: 4px;
+  border: 1px solid #FFFFFF;
+  white-space: nowrap;
+  box-shadow: 0 2px 8px rgba(220, 38, 38, 0.6), 0 2px 4px rgba(0,0,0,0.5);
+  letter-spacing: 0.5px;
+}
+
+.gmaps-dest-pin-wrap.selected-dest .gmaps-dest-label {
+  background: #EF4444;
+  box-shadow: 0 0 12px rgba(239, 68, 68, 0.9), 0 2px 6px rgba(0,0,0,0.6);
+  transform: scale(1.1);
+}
+
+/* ==========================================================================
+   Google Maps Origin Pin (Trip Start)
+   ========================================================================== */
+.custom-gmaps-origin-icon {
+  pointer-events: auto;
+}
+
+.gmaps-origin-pin-wrap {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: pointer;
+}
+
+.gmaps-origin-pin {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #10B981;
+  border: 2.5px solid #FFFFFF;
+  box-shadow: 0 0 10px rgba(16, 185, 129, 0.8), 0 2px 4px rgba(0,0,0,0.4);
+}
+
+.gmaps-origin-label {
+  margin-top: 2px;
+  background: rgba(6, 78, 59, 0.95);
+  color: #6EE7B7;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  font-weight: 700;
+  padding: 1px 5px;
+  border-radius: 4px;
+  border: 1px solid rgba(16, 185, 129, 0.5);
+  white-space: nowrap;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.4);
+}
+
+/* ==========================================================================
+   Google Maps Flowing Directional Polyline & Trails
+   ========================================================================== */
+.gmaps-flowing-direction-path {
+  animation: gmapsFlowDash 1.2s linear infinite;
+}
+
+@keyframes gmapsFlowDash {
+  from {
+    stroke-dashoffset: 22;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+.gmaps-active-trail {
+  filter: drop-shadow(0 0 6px rgba(0, 240, 255, 0.7));
+}
+
+/* Google Maps Leaflet Popup Styling */
+.gmaps-popup {
+  font-family: var(--font-sans);
+  min-width: 190px;
+  color: #0F172A;
+}
+
+.gmaps-popup-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid #E2E8F0;
+  padding-bottom: 5px;
+  margin-bottom: 6px;
+  font-weight: 700;
+  font-size: 13px;
+}
+
+.gmaps-popup-badge {
+  background: #1A73E8;
+  color: #FFFFFF;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+.gmaps-popup-body {
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+/* Right Panel: Vehicle Inspector & Dual ML predictions */
+.side-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.inspector-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 1.25rem;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.inspector-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.inspector-title {
+  font-size: 1.15rem;
+  font-weight: 800;
+}
+
+.inspector-subtitle {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+.status-badge {
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 0.25rem 0.65rem;
+  border-radius: 9999px;
+  font-family: var(--font-mono);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.status-badge.low {
+  background: rgba(16, 185, 129, 0.15);
+  color: var(--status-low-risk);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+.status-badge.moderate {
+  background: rgba(245, 158, 11, 0.15);
+  color: var(--status-mod-risk);
+  border: 1px solid rgba(245, 158, 11, 0.3);
+}
+
+.status-badge.high {
+  background: rgba(239, 68, 68, 0.15);
+  color: var(--status-high-risk);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+.telemetry-specs-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.75rem;
+  margin-bottom: 1.25rem;
+}
+
+.spec-tile {
+  background: var(--bg-primary);
+  border: 1px solid var(--border-color);
+  padding: 0.65rem 0.85rem;
+  border-radius: var(--radius-sm);
+}
+
+.spec-tile-label {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+}
+
+.spec-tile-val {
+  font-size: 1.05rem;
+  font-weight: 700;
+  font-family: var(--font-mono);
+  color: var(--text-primary);
+}
+
+/* Dual ML Prediction Box */
+.ml-pred-box {
+  background: linear-gradient(135deg, rgba(6, 182, 212, 0.08), rgba(59, 130, 246, 0.05));
+  border: 1px solid var(--border-glow);
+  border-radius: var(--radius-sm);
+  padding: 1rem;
+  margin-bottom: 1.25rem;
+}
+
+.ml-pred-title {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--accent-cyan);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 0.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.ml-models-row {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+
+.ml-model-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  padding: 0.6rem;
+  border-radius: var(--radius-sm);
+  text-align: center;
+}
+
+.ml-model-name {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  font-weight: 600;
+}
+
+.ml-model-eta {
+  font-size: 1.2rem;
+  font-weight: 800;
+  font-family: var(--font-mono);
+  color: var(--accent-cyan);
+}
+
+.ml-blended-eta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: var(--bg-card);
+  padding: 0.6rem 0.85rem;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-glow);
+}
+
+.ml-blended-label {
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.ml-blended-val {
+  font-size: 1.15rem;
+  font-weight: 800;
+  font-family: var(--font-mono);
+  color: var(--accent-emerald);
+}
+
+/* Optimization Action */
+.opt-action-box {
+  background: rgba(16, 185, 129, 0.08);
+  border: 1px dashed rgba(16, 185, 129, 0.35);
+  border-radius: var(--radius-sm);
+  padding: 0.85rem;
+  margin-bottom: 1rem;
+}
+
+.opt-action-title {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--accent-emerald);
+  margin-bottom: 0.35rem;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.opt-action-text {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  margin-bottom: 0.6rem;
+}
+
+/* Charts Section */
+.charts-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.25rem;
+  padding: 0 1.75rem 1.5rem;
+}
+
+.chart-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 1.25rem;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.chart-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.chart-title {
+  font-size: 0.95rem;
+  font-weight: 700;
+}
+
+.chart-container {
+  position: relative;
+  height: 250px;
+  width: 100%;
+}
+
+/* Table Section */
+.table-section {
+  padding: 0 1.75rem 2.5rem;
+}
+
+.table-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.table-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid var(--border-color);
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.table-search {
+  padding: 0.45rem 0.85rem;
+  background: var(--bg-primary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  color: var(--text-primary);
+  font-size: 0.85rem;
+  outline: none;
+  min-width: 240px;
+}
+
+.table-filter-group {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.table-filter-btn {
+  background: var(--bg-primary);
+  border: 1px solid var(--border-color);
+  color: var(--text-secondary);
+  padding: 0.35rem 0.75rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.table-filter-btn.active {
+  background: var(--accent-cyan);
+  color: #FFF;
+  border-color: var(--accent-cyan);
+}
+
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+  font-size: 0.85rem;
+}
+
+.data-table th {
+  padding: 0.75rem 1.25rem;
+  background: rgba(0, 0, 0, 0.1);
+  color: var(--text-muted);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.data-table td {
+  padding: 0.85rem 1.25rem;
+  border-bottom: 1px solid var(--border-color);
+  color: var(--text-primary);
+}
+
+.data-table tr:hover td {
+  background: var(--bg-card-hover);
+}
+
+.table-action-btn {
+  padding: 0.35rem 0.65rem;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-color);
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.table-action-btn:hover {
+  border-color: var(--accent-cyan);
+  color: var(--accent-cyan);
+}
+
+@media (max-width: 1024px) {
+  .dash-workspace {
+    grid-template-columns: 1fr;
+  }
+  .charts-grid {
+    grid-template-columns: 1fr;
+  }
+}
